@@ -2,7 +2,7 @@ name: develop
 
 on:
   push:
-    branches:    
+    branches:
       - develop
 
 jobs:
@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Run a one-line script
+    - name: Upload container to registry
       run: |
         docker build -t back .
-        echo ${{ secrets.REGISTRY_PASSWORD }} | docker login -u ${{ secrets.REGISTRY_LOGIN }} --password-stdin ${{ secrets.REGISTRY_REMOTE }}
+        docker login -u ${{ secrets.REGISTRY_LOGIN }} -p ${{ secrets.REGISTRY_PASSWORD }} ${{ secrets.REGISTRY_REMOTE }}
         docker tag back ${{ secrets.REGISTRY_REMOTE }}/back:develop
         docker push ${{ secrets.REGISTRY_REMOTE }}/back:develop
