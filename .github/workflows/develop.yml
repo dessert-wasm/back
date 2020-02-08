@@ -10,12 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - uses: azure/docker-login@v1
+      - uses: azure/docker-login@master
         with:
           login-server: dessert.azurecr.io
           username: ${{ secrets.REGISTRY_LOGIN }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
-      - name: Upload container to registry
-        run: |
+      - run: |
           docker build -t dessert.azurecr.io/back:develop .
           docker push dessert.azurecr.io/back:develop
