@@ -9,10 +9,14 @@ jobs:
   docker-publish:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - name: Upload container to registry
-      run: |
-        docker build -t back .
-        docker login -u ${{ secrets.REGISTRY_LOGIN }} -p ${{ secrets.REGISTRY_PASSWORD }} ${{ secrets.REGISTRY_REMOTE }}
-        docker tag back ${{ secrets.REGISTRY_REMOTE }}/back:develop
-        docker push ${{ secrets.REGISTRY_REMOTE }}/back:develop
+      - uses: actions/checkout@master
+      - uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_REMOTE }}
+          username: ${{ secrets.REGISTRY_LOGIN }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: Upload container to registry
+        run: |
+          docker build -t back .
+          docker tag back ${{ secrets.REGISTRY_REMOTE }}/back:develop
+          docker push ${{ secrets.REGISTRY_REMOTE }}/back:develop
