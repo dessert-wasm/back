@@ -12,11 +12,10 @@ jobs:
       - uses: actions/checkout@master
       - uses: azure/docker-login@v1
         with:
-          login-server: ${{ secrets.REGISTRY_REMOTE }}
+          login-server: dessert.azurecr.io
           username: ${{ secrets.REGISTRY_LOGIN }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - name: Upload container to registry
         run: |
-          docker build -t back .
-          docker tag back ${{ secrets.REGISTRY_REMOTE }}/back:develop
-          docker push ${{ secrets.REGISTRY_REMOTE }}/back:develop
+          docker build -t dessert.azurecr.io/back:develop .
+          docker push dessert.azurecr.io/back:develop
