@@ -1,0 +1,22 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dessert", "Dessert\Dessert.csproj", "{C964E43D-CFAA-4B37-A38A-3B7542B80BD4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dessert.Tests", "Dessert.Tests\Dessert.Tests.csproj", "{2E72B608-0F14-420F-9241-F91AACA866C7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C964E43D-CFAA-4B37-A38A-3B7542B80BD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C964E43D-CFAA-4B37-A38A-3B7542B80BD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C964E43D-CFAA-4B37-A38A-3B7542B80BD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C964E43D-CFAA-4B37-A38A-3B7542B80BD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E72B608-0F14-420F-9241-F91AACA866C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E72B608-0F14-420F-9241-F91AACA866C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E72B608-0F14-420F-9241-F91AACA866C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E72B608-0F14-420F-9241-F91AACA866C7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

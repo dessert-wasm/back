@@ -1,0 +1,8 @@
+Database:
+  Type: Postgres
+  Postgres:
+    User: back
+    Password: password
+    Database: back
+    Host: x2021dessert3090231965000.northeurope.cloudapp.azure.com
+    Port: 5432

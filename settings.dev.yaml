@@ -1,0 +1,4 @@
+Database:
+  Type: SQLite
+  SQLite:
+    Source: db.sqlite

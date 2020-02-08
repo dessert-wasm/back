@@ -1,0 +1,8 @@
+.idea
+bin
+obj
+logs
+*.db
+*.user
+.vscode
+.DS_Store
