@@ -1,0 +1,22 @@
+name: develop
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  docker-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: azure/docker-login@v1
+        with:
+          login-server: dessert.azurecr.io
+          username: ${{ secrets.REGISTRY_LOGIN }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Upload to registry
+        run: |
+          docker build -t dessert.azurecr.io/back:develop .
+          docker push dessert.azurecr.io/back:develop
