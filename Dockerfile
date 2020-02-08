@@ -3,10 +3,10 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
 
 WORKDIR /app
 
-COPY Dessert/Dessert.csproj ./
+COPY Dessert/Dessert.csproj .
 RUN dotnet restore
 
-COPY Dessert/ ./
+COPY Dessert .
 RUN dotnet publish -c Release -o out
 
 # -----------------------------------------------------------
