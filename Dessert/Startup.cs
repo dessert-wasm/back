@@ -144,8 +144,9 @@ namespace Dessert
                 policy.AllowAnyMethod();
                 policy.WithOrigins(
                     "http://localhost:3000",
-                    "https://dessert.ovh",
-                    "https://dev.dessert.ovh"
+                    "http://localhost:5000",
+                    "https://dessert.now.sh",
+                    "https://*.now.sh",
                     );
                 policy.AllowCredentials();
             });
