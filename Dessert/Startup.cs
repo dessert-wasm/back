@@ -140,14 +140,15 @@ namespace Dessert
 
             app.UseCors(policy =>
             {
-                policy.AllowAnyHeader();
-                policy.AllowAnyMethod();
+                policy.SetIsOriginAllowedToAllowWildcardSubdomains();
                 policy.WithOrigins(
                     "http://localhost:3000",
                     "http://localhost:5000",
                     "https://dessert.now.sh",
                     "https://*.now.sh"
                     );
+                policy.AllowAnyHeader();
+                policy.AllowAnyMethod();
                 policy.AllowCredentials();
             });
 
