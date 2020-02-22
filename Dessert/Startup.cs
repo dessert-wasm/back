@@ -146,7 +146,7 @@ namespace Dessert
                     "http://localhost:3000",
                     "http://localhost:5000",
                     "https://dessert.now.sh",
-                    "https://dev.dessert.now.sh",
+                    "https://dev.dessert.now.sh"
                     );
                 policy.AllowCredentials();
             });
