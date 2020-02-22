@@ -11,7 +11,8 @@ COPY Dessert .
 # For develop, we are using a SQLite local database
 # Remove the database we eventually copied to always have a
 # fresh one
-RUN rm -f mydb.db
+COPY settings.dev.yaml settings.yaml
+RUN rm -f db.sqlite
 RUN dotnet run -p . migrate --with-fake
 
 RUN dotnet publish -c Release -o out
