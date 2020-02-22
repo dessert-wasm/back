@@ -18,5 +18,5 @@ jobs:
 
       - name: Upload to registry
         run: |
-          docker build -t dessert.azurecr.io/back:develop .
+          docker build -f Dockerfile.develop -t dessert.azurecr.io/back:develop .
           docker push dessert.azurecr.io/back:develop
