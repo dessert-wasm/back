@@ -144,7 +144,8 @@ namespace Dessert
                 policy.WithOrigins(
                     "http://localhost:3000",
                     "http://localhost:5000",
-                    "https://dessert.now.sh",
+                    "https://dessert.dev",
+                    "https://develop.dessert.dev",
                     "https://*.now.sh"
                     );
                 policy.AllowAnyHeader();
