@@ -1,0 +1,8 @@
+AllowedOrigins:
+  - "http://localhost:3000"
+  - "http://localhost:3001"
+
+Database:
+  Type: SQLite
+  SQLite:
+    Source: 'db.db'

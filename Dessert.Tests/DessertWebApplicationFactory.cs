@@ -22,14 +22,19 @@ namespace Dessert.Tests
             {
                 using (var serviceScope = server.Host.Services.CreateScope())
                 {
-                    var faker = new Faker();
-                    
-                    DbInitializer.Initialize(serviceScope.ServiceProvider, true, new DbInitializerOptions
-                    {
-                        ModuleCount = () => 30,
-                        ReplacementPerModule = () => faker.Random.Int(0, 2),
-                        TagPerModule = () => faker.Random.Int(1, 2),
-                    });
+                    var rng = new Random();
+
+                    var seeder = new DbSeeder(serviceScope.ServiceProvider,
+                        new DbSeederOptions()
+                        {
+                            FakesOptions = new DbFakesOptions()
+                            {
+                                ModuleCount = () => 30,
+                                ReplacementPerModule = () => rng.Next(0, 2),
+                                TagPerModule = () => rng.Next(1, 2),
+                            },
+                        });
+                    seeder.Seed().Wait();
                 }
             }
             catch (Exception ex)

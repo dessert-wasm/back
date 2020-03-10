@@ -16,34 +16,45 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Dessert
 {
     public class Startup
     {
-        private readonly IHostingEnvironment _environment;
+        private readonly IWebHostEnvironment _environment;
+        private readonly IConfiguration _configuration;
 
-        public Startup(IHostingEnvironment environment)
+        public Startup(IWebHostEnvironment environment, IConfiguration configuration)
         {
             _environment = environment;
+            _configuration = configuration;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvcCore(options =>
-            {
-                options.EnableEndpointRouting = false;
-            })
-                .AddAuthorization()
-                .AddNewtonsoftJson()
-                .AddCors()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(PolicyConstants.RequireAdministrator, Policies.RequireAdministrator);
+            });
+
+            services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                var dbSettings = _configuration.GetSection("Database").Get<DatabaseSettings>();
+                if (dbSettings == null)
+                    throw new Exception("No Database configuration found");
+
+                if (dbSettings.DatabaseTypeEnum == DatabaseTypeEnum.SQLite)
+                    options.UseSqlite(dbSettings.GetConnectionString());
+                else if (dbSettings.DatabaseTypeEnum == DatabaseTypeEnum.Postgres)
+                    options.UseNpgsql(dbSettings.GetConnectionString());
+                else
+                    throw new Exception($"cannot identify database type: {dbSettings.Type}");
             });
 
             services.AddIdentityCore<Account>()
@@ -67,7 +78,7 @@ namespace Dessert
                         options.Cookie.Name = "auth";
                         options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
                         options.SlidingExpiration = true;
-                        options.Cookie.HttpOnly = false;
+                        options.Cookie.HttpOnly = true;
                         options.Cookie.SameSite = SameSiteMode.None;
                         options.Cookie.SecurePolicy = CookieSecurePolicy.None;
                         options.Events = new CookieAuthenticationEvents
@@ -81,9 +92,19 @@ namespace Dessert
                             {
                                 redirectContext.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                                 return Task.CompletedTask;
+                            },
+                            OnRedirectToAccessDenied = redirectContext =>
+                            {
+                                redirectContext.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                                return Task.CompletedTask;
                             }
                         };
                     });
+            
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -103,11 +124,22 @@ namespace Dessert
 
                 options.User.RequireUniqueEmail = false;
             });
-
-            services.AddCors();
+            
+            services.AddCors(options =>
+            {
+                var allowedOrigins = _configuration.GetSection("AllowedOrigins").Get<string[]>();
+                if (allowedOrigins == null)
+                    throw new Exception("No AllowedOrigins configuration found");
+                
+                options.AddDefaultPolicy(policy => 
+                    policy.SetIsOriginAllowedToAllowWildcardSubdomains()
+                        .WithOrigins(allowedOrigins)
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                        .AllowAnyHeader());
+            });
 
             services.AddDataLoaderRegistry();
-
             services.AddGraphQL(sp =>
                     SchemaBuilder.New()
                         .SetOptions(new SchemaOptions
@@ -130,40 +162,21 @@ namespace Dessert
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
-            if (_environment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseCookiePolicy();
-            app.UseAuthentication();
-
-            app.UseCors(policy =>
-            {
-                policy.SetIsOriginAllowedToAllowWildcardSubdomains();
-                policy.WithOrigins(
-                    "http://localhost:3000",
-                    "http://localhost:5000",
-                    "https://dessert.dev",
-                    "https://develop.dessert.dev",
-                    "https://*.now.sh"
-                    );
-                policy.AllowAnyHeader();
-                policy.AllowAnyMethod();
-                policy.AllowCredentials();
-            });
-
+            app.UseRouting();
             app.UseWebSockets();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseCors();
+
             app.UseGraphQL();
 
             if (_environment.IsDevelopment())
             {
-                app.UseGraphiQL();
                 app.UsePlayground();
                 app.UseVoyager();
             }
-
-            app.UseMvc();
         }
     }
 }
