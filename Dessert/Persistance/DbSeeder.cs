@@ -19,10 +19,6 @@ namespace Dessert.Persistance
         private readonly ApplicationDbContext _db;
         private readonly UserManager<Account> _userManager;
         
-        private static readonly Faker<ModuleReplacement> GenModuleReplacement = new Faker<ModuleReplacement>()
-            .RuleFor(m => m.Name, f => f.Company.CatchPhrase())
-            .RuleFor(m => m.Link, f => f.Internet.Url());
-
         public DbSeeder(IServiceProvider serviceProvider, DbSeederOptions options)
         {
             _options = options;
@@ -92,34 +88,47 @@ namespace Dessert.Persistance
             var tags = await _db.ModuleTags.ToListAsync();
             var accounts = await _db.Users.ToListAsync();
 
-            var moduleReplacement = new ModuleReplacement()
-            {
-                Name = "yaml-js",
-                Link = "https://www.npmjs.com/package/yaml-js",
-            };
+            await CreateReplacements();
+
+            var replacements = await _db.ModuleReplacements.ToListAsync();
+
             var module = CreateModule(
                 "dessert-yaml-js",
                 "WASM connector corresponding to the yaml-js library",
-                new[] {moduleReplacement},
+                replacements.Take(1),
                 _faker.PickRandom(tags, _options.FakesOptions.TagPerModule()),
                 accounts.FirstOrDefault(x => x.Id == 1));
             Debug.Assert(module.Id == 1);
 
             var moduleCount = _options.FakesOptions.ModuleCount();
-            var replacementPerModuleCount = _options.FakesOptions.ReplacementPerModule();
             for (int i = 0; i < moduleCount; i++)
             {
-                var replacements = GenModuleReplacement
-                    .GenerateForever()
-                    .Take(replacementPerModuleCount);
                 await CreateModule(
                     _faker.Company.CatchPhrase(),
                     _faker.Lorem.Paragraphs(),
-                    replacements,
+                    _faker.PickRandom(replacements, _options.FakesOptions.ReplacementPerModule()),
                     _faker.PickRandom(tags, _options.FakesOptions.TagPerModule()),
                     _faker.PickRandom(accounts));
             }
 
+            await _db.SaveChangesAsync();
+        }
+
+        private async Task CreateReplacements()
+        {
+            var moduleReplacement = new ModuleReplacement()
+            {
+                Name = "yaml-js",
+                Link = "https://www.npmjs.com/package/yaml-js"
+            };
+            await _db.ModuleReplacements.AddAsync(moduleReplacement);
+
+            var replacements = new Faker<ModuleReplacement>()
+                .RuleFor(m => m.Name, f => f.Hacker.Adjective())
+                .RuleFor(m => m.Link, f => f.Internet.Url());
+            var replacementCount = _options.FakesOptions.ReplacementsCount();
+            await _db.ModuleReplacements.AddRangeAsync(replacements.GenerateForever().Take(replacementCount));
+            
             await _db.SaveChangesAsync();
         }
 
@@ -276,6 +285,7 @@ namespace Dessert.Persistance
     public class DbFakesOptions
     {
         public Func<int> ModuleCount { get; set; }
+        public Func<int> ReplacementsCount { get; set; }
         public Func<int> ReplacementPerModule { get; set; }
         public Func<int> TagPerModule { get; set; }
     }

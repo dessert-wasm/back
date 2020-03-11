@@ -66,6 +66,7 @@ namespace Dessert
                                 dbFakesOptions = new DbFakesOptions()
                                 {
                                     ModuleCount = () => rng.Next(250, 400),
+                                    ReplacementsCount = () => rng.Next(50, 100),
                                     ReplacementPerModule = () => rng.Next(0, 3),
                                     TagPerModule = () => rng.Next(2, 6),
                                 };

@@ -6,6 +6,7 @@ using Dessert.Domain.Entities;
 using Dessert.Domain.Entities.Identity;
 using Dessert.Domain.Enums;
 using Dessert.Persistance;
+using Dessert.Types.Arguments;
 using Dessert.Utilities;
 using Dessert.Utilities.Pagination;
 using HotChocolate;
@@ -71,6 +72,20 @@ namespace Dessert.GraphQL
             var orderedQuery = sqlQuery.OrderByDescending(x => x.LastUpdatedDateTime);
 
             return await Paginator.GetPaginatedResult(paginationQuery, orderedQuery);
+        }
+
+        public async Task<IReadOnlyCollection<Module>> Recommend(IResolverContext context,
+            IReadOnlyCollection<JSDependency> dependencies,
+            [Service] ApplicationDbContext applicationDbContext)
+        {
+            var dependencyNames = dependencies.Select(x => x.Name);
+
+            var replacements = await applicationDbContext.ModuleModuleReplacementRelations
+                .Where(x => dependencyNames.Contains(x.ModuleReplacement.Name))
+                .Select(x => x.Module)
+                .Distinct()
+                .ToArrayAsync();
+            return replacements;
         }
     }
 }
