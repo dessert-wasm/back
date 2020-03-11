@@ -1,4 +1,5 @@
 using Dessert.Types;
+using Dessert.Types.Arguments;
 using HotChocolate.Types;
 
 namespace Dessert.GraphQL

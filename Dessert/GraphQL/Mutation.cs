@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dessert.Domain.Entities;
 using Dessert.Domain.Entities.Identity;
-using Dessert.Persistance;
+using Dessert.Persistence;
 using Dessert.Utilities;
 using HotChocolate;
 using HotChocolate.Resolvers;

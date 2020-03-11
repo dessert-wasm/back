@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using Bogus;
 using Dessert.Domain.Entities;
 using Dessert.Domain.Entities.Identity;
+using Dessert.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Dessert.Persistance
 {
@@ -18,6 +20,7 @@ namespace Dessert.Persistance
         private readonly DbSeederOptions _options;
         private readonly ApplicationDbContext _db;
         private readonly UserManager<Account> _userManager;
+        private readonly ILogger<DbSeeder> _logger;
         
         public DbSeeder(IServiceProvider serviceProvider, DbSeederOptions options)
         {
@@ -26,16 +29,22 @@ namespace Dessert.Persistance
             
             _db = serviceProvider.GetRequiredService<ApplicationDbContext>();
             _userManager = serviceProvider.GetRequiredService<UserManager<Account>>();
+            _logger = serviceProvider.GetRequiredService<ILogger<DbSeeder>>();
         }
 
         public async Task Seed()
         {
+            _logger.LogInformation("Create database schema");
             _db.Database.EnsureCreated();
 
+            _logger.LogInformation("Create tags");
             await AddTags();
             if (_options.FakesOptions != null)
             {
+                _logger.LogInformation("Create fake accounts");
                 await AddAccounts();
+                
+                _logger.LogInformation("Create fake modules");
                 await AddModules();
             }
         }

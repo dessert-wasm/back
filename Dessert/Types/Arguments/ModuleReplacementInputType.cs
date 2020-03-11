@@ -1,7 +1,7 @@
 using Dessert.Domain.Entities;
 using HotChocolate.Types;
 
-namespace Dessert.Types
+namespace Dessert.Types.Arguments
 {
     public class ModuleReplacementInputType
         : InputObjectType<ModuleReplacement>

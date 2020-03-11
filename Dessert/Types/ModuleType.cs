@@ -1,7 +1,7 @@
 using Dessert.DataLoaders;
 using Dessert.Domain.Entities;
 using Dessert.Domain.Entities.Identity;
-using Dessert.Persistance;
+using Dessert.Persistence;
 using GreenDonut;
 using HotChocolate.Resolvers;
 using HotChocolate.Types;

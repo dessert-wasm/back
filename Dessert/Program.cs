@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Dessert.Persistance;
 using Dessert.Utilities.Configuration;
 using Microsoft.AspNetCore.Hosting;
@@ -18,7 +19,8 @@ namespace Dessert
 
             app.HelpOption("-h |--help");
 
-            var host = Host.CreateDefaultBuilder(args)
+            var host = new WebHostBuilder()
+                .UseContentRoot(Directory.GetCurrentDirectory())
                 .ConfigureAppConfiguration((context, builder) =>
                 {
                     builder.Sources.Clear();
@@ -28,20 +30,30 @@ namespace Dessert
                     builder.AddYamlFile("settings.yaml", optional: true);
                     builder.AddYamlFile($"settings.{env.EnvironmentName.ToLower()}.yaml", optional: true);
 
-                    builder.AddEnvironmentVariables("DOTNET_");
+                    builder.AddEnvironmentVariables();
 
-                    builder.AddCommandLine(args);
+                    if (args != null)
+                        builder.AddCommandLine(args);
                 })
                 .ConfigureLogging((context, logging) =>
                 {
                     logging.AddConfiguration(context.Configuration.GetSection("Logging"));
                     logging.AddConsole();
                     logging.AddDebug();
+                    logging.AddEventSourceLogger();
                 })
-                .ConfigureWebHostDefaults(webHostBuilder =>
+                .UseDefaultServiceProvider((context, options) =>
                 {
-                    webHostBuilder.UseStartup<Startup>();
-                }).Build();
+                    var isDevelopment = context.HostingEnvironment.IsDevelopment();
+                    options.ValidateScopes = isDevelopment;
+                    options.ValidateOnBuild = isDevelopment;
+                })
+                .UseStartup<Startup>()
+                .UseKestrel((builderContext, options) =>
+                {
+                    options.Configure(builderContext.Configuration.GetSection("Kestrel"));
+                })
+                .Build();
 
             var logger = host.Services.CreateScope().ServiceProvider.GetRequiredService<ILogger<Program>>();
 
@@ -77,7 +89,16 @@ namespace Dessert
                                 {
                                     FakesOptions = dbFakesOptions,
                                 });
-                            seeder.Seed().Wait();
+                            try
+                            {
+                                seeder.Seed().Wait();
+                                logger.LogInformation("Migration finished");
+                            }
+                            catch (Exception e)
+                            {
+                                logger.LogError(e, "Fatal error while migrating or seeding the database");
+                                return 1;
+                            }
                         }
 
                         return 0;

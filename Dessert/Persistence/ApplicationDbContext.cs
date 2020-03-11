@@ -3,7 +3,7 @@ using Dessert.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Dessert.Persistance
+namespace Dessert.Persistence
 {
     public class ApplicationDbContext : IdentityDbContext<Account, AccountRole, long>
     {

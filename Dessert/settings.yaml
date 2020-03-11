@@ -3,3 +3,8 @@ Logging:
     Default: "Debug"
     Microsoft: "Information"
     System: "Information"
+
+Kestrel:
+  EndPoints:
+    Http:
+      Url: "http://127.0.0.1:5000"

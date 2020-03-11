@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Bogus;
 using Dessert.Domain.Entities;
 using Dessert.Domain.Entities.Identity;
-using Dessert.Persistance;
+using Dessert.Persistence;
 using GraphQL.Common.Request;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;

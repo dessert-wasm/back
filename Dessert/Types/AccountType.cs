@@ -2,7 +2,7 @@ using System.Linq;
 using Dessert.DataLoaders;
 using Dessert.Domain.Entities;
 using Dessert.Domain.Entities.Identity;
-using Dessert.Persistance;
+using Dessert.Persistence;
 using Dessert.Types.Pagination;
 using Dessert.Utilities;
 using Dessert.Utilities.Pagination;
@@ -10,7 +10,6 @@ using GreenDonut;
 using HotChocolate.Resolvers;
 using HotChocolate.Types;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace Dessert.Types
 {

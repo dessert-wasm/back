@@ -5,4 +5,4 @@ AllowedOrigins:
 Database:
   Type: SQLite
   SQLite:
-    Source: 'db.db'
+    Source: 'db.sqlite'

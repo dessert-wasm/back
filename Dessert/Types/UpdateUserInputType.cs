@@ -1,4 +1,3 @@
-using Dessert.Domain.Entities;
 using Dessert.Domain.Entities.Identity;
 using HotChocolate.Types;
 
