@@ -1,6 +1,6 @@
 using System;
 using Bogus;
-using Dessert.Models;
+using Dessert.Persistance;
 using GraphQL.Client.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

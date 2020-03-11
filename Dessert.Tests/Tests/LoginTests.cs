@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Bogus;
-using Dessert.Models;
+using Dessert.Domain.Entities;
+using Dessert.Domain.Entities.Identity;
 using GraphQL.Common.Request;
 using Xunit;
 

@@ -1,7 +1,7 @@
 using System;
 using Npgsql;
 
-namespace Dessert.Models
+namespace Dessert.Persistance
 {
     public class PgDatabaseSettings
     {

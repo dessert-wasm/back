@@ -2,7 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dessert.DataLoaders;
-using Dessert.Models;
+using Dessert.Domain.Entities;
+using Dessert.Domain.Entities.Identity;
+using Dessert.Domain.Enums;
+using Dessert.Persistance;
 using Dessert.Utilities;
 using Dessert.Utilities.Pagination;
 using HotChocolate;
@@ -46,6 +49,7 @@ namespace Dessert.GraphQL
 
         public async Task<PaginatedResult<Module>> Search(IResolverContext context,
             string query,
+            ModuleTypeEnum? type,
             [Service] ApplicationDbContext applicationDbContext)
         {
             var paginationQuery = context.GetPaginationQuery();
@@ -56,10 +60,17 @@ namespace Dessert.GraphQL
                 .AsNoTracking()
                 .Where(x =>
                     EF.Functions.Like(x.Name, query) ||
-                    EF.Functions.Like(x.Description, query))
-                .OrderByDescending(x => x.LastUpdatedDateTime);
+                    EF.Functions.Like(x.Description, query));
 
-            return await Paginator.GetPaginatedResult(paginationQuery, sqlQuery);
+            if (type.HasValue)
+            {
+                sqlQuery = sqlQuery
+                    .Where(x => x.IsCore == (type.Value == ModuleTypeEnum.Core));
+            }
+
+            var orderedQuery = sqlQuery.OrderByDescending(x => x.LastUpdatedDateTime);
+
+            return await Paginator.GetPaginatedResult(paginationQuery, orderedQuery);
         }
     }
 }

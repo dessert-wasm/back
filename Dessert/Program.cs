@@ -1,5 +1,5 @@
 ﻿using System;
-using Dessert.Models;
+using Dessert.Persistance;
 using Dessert.Utilities.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.CommandLineUtils;

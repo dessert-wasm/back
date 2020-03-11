@@ -30,4 +30,8 @@
       <_ContentIncludedByDefault Remove="out\Dessert.runtimeconfig.json" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Dessert.Domain\Dessert.Domain.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -2,8 +2,10 @@
 using System.Net;
 using System.Threading.Tasks;
 using Dessert.Authorization;
+using Dessert.Domain.Entities;
+using Dessert.Domain.Entities.Identity;
 using Dessert.GraphQL;
-using Dessert.Models;
+using Dessert.Persistance;
 using HotChocolate;
 using HotChocolate.AspNetCore;
 using HotChocolate.AspNetCore.Voyager;

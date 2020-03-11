@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace Dessert.Models
+namespace Dessert.Domain.Entities.Identity
 {
     public class AccountRole : IdentityRole<long>
     {

@@ -4,11 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Bogus;
+using Dessert.Domain.Entities;
+using Dessert.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Dessert.Models
+namespace Dessert.Persistance
 {
     public class DbSeeder
     {

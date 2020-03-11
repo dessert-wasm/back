@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Dessert.Models;
+using Dessert.Domain.Entities;
+using Dessert.Domain.Entities.Identity;
 using Dessert.Utilities.Pagination;
 using GraphQL.Common.Request;
 using Newtonsoft.Json.Linq;

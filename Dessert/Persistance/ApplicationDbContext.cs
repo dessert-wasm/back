@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Dessert.Domain.Entities;
+using Dessert.Domain.Entities.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Dessert.Models
+namespace Dessert.Persistance
 {
     public class ApplicationDbContext : IdentityDbContext<Account, AccountRole, long>
     {

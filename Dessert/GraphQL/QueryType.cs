@@ -1,4 +1,4 @@
-using Dessert.Models;
+using Dessert.Domain.Entities;
 using Dessert.Types;
 using Dessert.Types.Pagination;
 using Dessert.Utilities;
@@ -22,9 +22,11 @@ namespace Dessert.GraphQL
                 .Type<NonNullType<AccountType>>();
 
             descriptor
-                .Field(t => t.Search(default, default, default))
+                .Field(t => t.Search(default, default, default, default))
                 .Name("search")
                 .AddPaginationArgument()
+                .Argument("query", x => x.Type<NonNullType<StringType>>())
+                .Argument("type", x => x.Type<ModuleTypeEnumType>())
                 .Type<NonNullType<PaginatedResultType<Module>>>();
 
             descriptor

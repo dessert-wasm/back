@@ -1,6 +1,8 @@
 using System.Linq;
 using Dessert.DataLoaders;
-using Dessert.Models;
+using Dessert.Domain.Entities;
+using Dessert.Domain.Entities.Identity;
+using Dessert.Persistance;
 using Dessert.Types.Pagination;
 using Dessert.Utilities;
 using Dessert.Utilities.Pagination;
@@ -44,7 +46,7 @@ namespace Dessert.Types
 
                     var sqlQuery = dataContext.Modules
                         .AsNoTracking()
-                        .Where(x => x.Author == account)
+                        .Where(x => x.AuthorId == account.Id)
                         .OrderByDescending(x => x.LastUpdatedDateTime);
 
                     return Paginator.GetPaginatedResult(paginationQuery, sqlQuery);

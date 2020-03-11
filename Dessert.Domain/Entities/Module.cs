@@ -1,6 +1,7 @@
 using System;
+using Dessert.Domain.Entities.Identity;
 
-namespace Dessert.Models
+namespace Dessert.Domain.Entities
 {
     public class Module
     {
