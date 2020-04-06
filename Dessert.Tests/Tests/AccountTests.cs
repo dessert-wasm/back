@@ -1,9 +1,6 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Dessert.Models;
-using Dessert.Utilities.Pagination;
+using Dessert.Domain.Entities.Identity;
 using GraphQL.Common.Request;
-using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Dessert.Tests.Tests

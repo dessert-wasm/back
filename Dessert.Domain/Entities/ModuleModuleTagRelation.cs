@@ -1,4 +1,4 @@
-namespace Dessert.Models
+namespace Dessert.Domain.Entities
 {
     public class ModuleModuleTagRelation
     {

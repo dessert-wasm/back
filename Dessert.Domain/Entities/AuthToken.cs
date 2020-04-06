@@ -1,4 +1,6 @@
-namespace Dessert.Models
+using Dessert.Domain.Entities.Identity;
+
+namespace Dessert.Domain.Entities
 {
     public class AuthToken
     {
@@ -6,7 +8,6 @@ namespace Dessert.Models
         public string Token { get; set; }
         public string Description { get; set; }
         public long AccountId { get; set; }
-
 
         public Account Account { get; set; }
     }

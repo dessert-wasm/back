@@ -1,4 +1,4 @@
-using Dessert.Models;
+using Dessert.Domain.Entities;
 using HotChocolate.Types;
 
 namespace Dessert.Types

@@ -1,6 +1,8 @@
 # Image used during the build process
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
 
+ENV ASPNETCORE_ENVIRONMENT=Development
+
 WORKDIR /app
 
 COPY Dessert/Dessert.csproj .
@@ -10,7 +12,6 @@ COPY Dessert .
 
 # For develop, we are using a SQLite local database
 # Remove the database we eventually copied to always have a fresh one
-COPY settings.dev.yaml settings.yaml
 RUN rm -f db.sqlite
 RUN dotnet run -p . migrate --with-fake
 

@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Dessert.Models;
+using Dessert.Domain.Entities;
+using Dessert.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Dessert.DataLoaders
