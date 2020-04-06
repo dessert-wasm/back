@@ -2,7 +2,10 @@ IsThisProd: "Perhaps"
 
 AllowedOrigins:
   - "http://localhost:3000"
-  - "http://dessert.ru"
+  - "http://localhost:5000"
+  - "https://dessert.dev"
+  - "https://develop.dessert.dev"
+  - "https://*.now.sh"
 
 Database:
   Type: Postgres
