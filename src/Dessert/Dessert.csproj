@@ -34,4 +34,16 @@
       <ProjectReference Include="..\Dessert.Domain\Dessert.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="settings.development.yaml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="settings.production.yaml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="settings.yaml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

@@ -20,6 +20,7 @@ ENV ASPNETCORE_ENVIRONMENT=Development
 RUN rm -f db.sqlite
 
 RUN dotnet run -p . migrate --with-fake
+RUN cp ./db.sqlite /app
 
 # -----------------------------------------------------------
 # Runtime
@@ -29,5 +30,7 @@ WORKDIR /app
 
 # Binaries
 COPY --from=build /app ./
+
+ENV ASPNETCORE_ENVIRONMENT=Development
 
 ENTRYPOINT ["./Dessert", "start"]
