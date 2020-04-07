@@ -1,0 +1,15 @@
+AllowedOrigins:
+  - "http://localhost:3000"
+  - "http://localhost:5000"
+  - "https://dessert.dev"
+  - "https://develop.dessert.dev"
+  - "https://*.now.sh"
+
+Database:
+  Type: Postgres
+  Postgres:
+    User: "back"
+    Password: "put_that_in_a_scret_you_foock"
+    Database: "back"
+    Host: "x2021dessert3090231965000.northeurope.cloudapp.azure.com"
+    Port: 5432

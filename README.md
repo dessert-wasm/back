@@ -87,10 +87,50 @@ The server is now available on port `1337`.
 
 ## Configuration
 
-The configuration of the program is located in `Dessert/settings.yaml`.
+The app can be configured through multiple files in the Dessert/ directory:
 
-The server is compatible with either SQLite or PostgreSQL. See the example
-configuration files provided at the root of the repository.
+- `settings.yaml` always read
+- `settings.development.yaml` for developement only
+- `settings.production.yaml` for production only
+
+The two environment specific files will override any key present in the `settings.yaml` file.
+
+You can also use the application argument and environment to configure it.
+
+### Database
+The `Database` section describes the database connection
+The server is compatible with either SQLite or PostgreSQL.
+Example for SQLite:
+
+```
+Database:
+  Type: SQLite
+  SQLite:
+    Source: 'db.db'
+```
+
+Example for Postgres:
+
+```
+Database:
+  Type: Postgres
+  Postgres:
+    User: back
+    Password: "put_that_in_a_scret_you_foock"
+    Database: "dessert-back"
+    Host: "myhost.com"
+    Port: 5432
+```
+
+### AllowedOrigins
+The `AllowedOrigins` section should accept an array of url, which will describe the allowed origins for the CORS
+Example:
+
+```
+AllowedOrigins:
+  - "http://localhost:3000"
+  - "http://localhost:3001"
+```
 
 ## Tests
 
