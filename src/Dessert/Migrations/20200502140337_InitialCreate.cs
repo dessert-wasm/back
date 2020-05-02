@@ -28,8 +28,7 @@ namespace Dessert.Migrations
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
                     ProfilePicUrl = table.Column<string>(nullable: true),
-                    FirstName = table.Column<string>(nullable: true),
-                    LastName = table.Column<string>(nullable: true)
+                    Nickname = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

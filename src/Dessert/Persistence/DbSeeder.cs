@@ -141,19 +141,17 @@ namespace Dessert.Persistance
             await _db.SaveChangesAsync();
         }
 
-        private async Task<Account> AddAccount(string username,
+        private async Task<Account> AddAccount(
             string password,
             string email,
-            string firstName,
-            string lastName,
+            string nickname,
             string pic)
         {
             var account = new Account()
             {
-                UserName = username,
+                UserName = email,
                 Email = email,
-                FirstName = firstName,
-                LastName = lastName,
+                Nickname = nickname,
                 ProfilePicUrl = pic,
             };
 
@@ -165,51 +163,39 @@ namespace Dessert.Persistance
         private async Task AddAccounts()
         {
             var account = await AddAccount(
-                "Tahani",
                 "pass",
                 "tahani.aj@gmail.co",
                 "Tahani",
-                "Al-Jamil",
                 "https://vignette.wikia.nocookie.net/thegoodplace/images/d/da/3tahani.jpg/revision/latest/scale-to-width-down/620");
             Debug.Assert(account.Id == 1);
             account = await AddAccount(
-                "Eleanor",
                 "pass",
                 "eleanor.s@gmail.co",
                 "Eleanor",
-                "Shellstrop",
                 "https://vignette.wikia.nocookie.net/thegoodplace/images/e/e1/3shellstrop.jpg/revision/latest/scale-to-width-down/620");
             Debug.Assert(account.Id == 2);
             account = await AddAccount(
-                "Chidi",
                 "pass",
                 "chidi.a@gmail.co",
-                "Chidi",
                 "Anagonye",
                 "https://vignette.wikia.nocookie.net/thegoodplace/images/1/1a/3chidi.jpg/revision/latest/scale-to-width-down/620");
             Debug.Assert(account.Id == 3);
             account = await AddAccount(
-                "Janet",
                 "pass",
                 "janet@gmail.co",
-                "Janet",
                 "On Sait Pas",
                 "https://vignette.wikia.nocookie.net/thegoodplace/images/9/90/3janet.jpg/revision/latest/scale-to-width-down/620");
             Debug.Assert(account.Id == 4);
             account = await AddAccount(
-                "Jason",
                 "pass",
                 "jason.m@gmail.co",
-                "Jason",
                 "Mendoza",
                 "https://vignette.wikia.nocookie.net/thegoodplace/images/a/a5/3jason.jpg/revision/latest/scale-to-width-down/620");
             Debug.Assert(account.Id == 5);
             account = await AddAccount(
-                "Michael",
                 "pass",
                 "mochael@gmail.co",
                 "Michael",
-                "???",
                 "https://vignette.wikia.nocookie.net/thegoodplace/images/b/bb/3michael.jpg/revision/latest/scale-to-width-down/620");
             Debug.Assert(account.Id == 6);
         }

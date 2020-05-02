@@ -37,11 +37,6 @@ namespace Dessert
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy(PolicyConstants.RequireAdministrator, Policies.RequireAdministrator);
-            });
-
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 var dbSettings = _configuration.GetSection("Database").Get<DatabaseSettings>();
@@ -55,6 +50,12 @@ namespace Dessert
                 else
                     throw new Exception($"cannot identify database type: {dbSettings.Type}");
             });
+            
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(PolicyConstants.RequireAdministrator, Policies.RequireAdministrator);
+            });
+
 
             services.AddIdentityCore<Account>()
                 .AddRoles<AccountRole>()
@@ -123,7 +124,7 @@ namespace Dessert
                 options.SignIn.RequireConfirmedEmail = false;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
 
-                options.User.RequireUniqueEmail = false;
+                options.User.RequireUniqueEmail = true;
             });
             
             services.AddCors(options =>
