@@ -54,13 +54,7 @@ namespace Dessert.Types
             descriptor.Field(f => f.ProfilePicUrl)
                 .Type<NonNullType<UrlType>>();
 
-            descriptor.Field(f => f.UserName)
-                .Type<NonNullType<StringType>>();
-
-            descriptor.Field(f => f.FirstName)
-                .Type<NonNullType<StringType>>();
-
-            descriptor.Field(f => f.LastName)
+            descriptor.Field(f => f.Nickname)
                 .Type<NonNullType<StringType>>();
         }
     }

@@ -25,12 +25,13 @@ namespace Dessert.GraphQL
             _logger = logger;
         }
 
-        public async Task<Account> Login(string username,
+        public async Task<Account> Login(
+            string email,
             string password,
             bool remember,
             [Service] SignInManager<Account> signInManager)
         {
-            var account = await signInManager.UserManager.FindByNameAsync(username);
+            var account = await signInManager.UserManager.FindByEmailAsync(email);
 
             if (account == null)
                 throw new Exception("invalid credentials");
@@ -44,7 +45,8 @@ namespace Dessert.GraphQL
 
         public async Task<Account> Register(
             IResolverContext context,
-            string username,
+            string email,
+            string nickname,
             string password,
             [Service] UserManager<Account> userManager,
             [Service] SignInManager<Account> signInManager)
@@ -54,7 +56,10 @@ namespace Dessert.GraphQL
 
             var account = new Account()
             {
-                UserName = username,
+                UserName = email,
+                Email = email,
+                Nickname = nickname,
+                ProfilePicUrl = "https://www.bbcgoodfood.com/sites/default/files/recipe-collections/collection-image/2018/09/dessert-main-image-molten-cake.jpg"
             };
 
             var result = await userManager.CreateAsync(account, password);
@@ -171,8 +176,8 @@ namespace Dessert.GraphQL
             var input = context.Argument<Account>("account");
             var account = await userManager.GetUserAsync(context.GetClaimsPrincipal());
 
-            account.FirstName = input.FirstName;
-            account.LastName = input.LastName;
+            account.UserName = input.UserName;
+            account.ProfilePicUrl = input.ProfilePicUrl;
 
             var result = await userManager.UpdateAsync(account);
             if (!result.Succeeded)

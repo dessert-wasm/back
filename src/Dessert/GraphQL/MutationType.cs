@@ -13,15 +13,16 @@ namespace Dessert.GraphQL
             descriptor
                 .Field(t => t.Login(default, default, default, default))
                 .Name("login")
-                .Argument("username", arg => arg.Type<NonNullType<StringType>>())
+                .Argument("email", arg => arg.Type<NonNullType<StringType>>())
                 .Argument("password", arg => arg.Type<NonNullType<StringType>>())
                 .Argument("remember", arg => arg.Type<NonNullType<BooleanType>>())
                 .Type<NonNullType<AccountType>>();
 
             descriptor
-                .Field(t => t.Register(default, default, default, default, default))
+                .Field(t => t.Register(default, default, default, default, default, default))
                 .Name("register")
-                .Argument("username", arg => arg.Type<NonNullType<StringType>>())
+                .Argument("email", arg => arg.Type<NonNullType<StringType>>())
+                .Argument("nickname", arg => arg.Type<NonNullType<StringType>>())
                 .Argument("password", arg => arg.Type<NonNullType<StringType>>())
                 .Type<NonNullType<AccountType>>();
 

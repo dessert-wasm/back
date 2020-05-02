@@ -10,12 +10,12 @@ namespace Dessert.Persistence
         public ApplicationDbContext()
         {
         }
-
+        
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
-
+        
         public virtual DbSet<AuthToken> AuthTokens { get; set; }
         public virtual DbSet<Module> Modules { get; set; }
         public virtual DbSet<ModuleModuleTagRelation> ModuleModuleTagRelations { get; set; }
@@ -60,6 +60,11 @@ namespace Dessert.Persistence
 
             modelBuilder.Entity<ModuleModuleReplacementRelation>()
                 .HasKey(pt => new { pt.ModuleId, ModduleReplacementId = pt.ModuleReplacementId });
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            // optionsBuilder.UseSqlite("Data Source=db.sqlite");
         }
     }
 }

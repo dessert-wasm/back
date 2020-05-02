@@ -69,8 +69,8 @@ namespace Dessert.Tests.Tests
 
             Assert.Equal(2, account.Id);
             Assert.Equal("Eleanor", account.UserName);
-            Assert.Equal("Eleanor", account.FirstName);
-            Assert.Equal("Shellstrop", account.LastName);
+            // Assert.Equal("Eleanor", account.FirstName);
+            // Assert.Equal("Shellstrop", account.LastName);
             Assert.IsType<JArray>(response.Data["user"]["modules"]["result"]);
             Assert.Empty(response.Data["user"]["tokens"]);
         }
@@ -117,8 +117,8 @@ namespace Dessert.Tests.Tests
             Assert.Equal("WASM connector corresponding to the yaml-js library", module.Description);
             Assert.Equal(1, module.Author.Id);
             Assert.Equal("Tahani", module.Author.UserName);
-            Assert.Equal("Tahani", module.Author.FirstName);
-            Assert.Equal("Al-Jamil", module.Author.LastName);
+            // Assert.Equal("Tahani", module.Author.FirstName);
+            // Assert.Equal("Al-Jamil", module.Author.LastName);
         }
 
         [Fact]

@@ -10,10 +10,10 @@ namespace Dessert.Types
         {
             descriptor.BindFieldsExplicitly();
 
-            descriptor.Field(t => t.FirstName)
+            descriptor.Field(t => t.Nickname)
                 .Type<NonNullType<StringType>>();
 
-            descriptor.Field(t => t.LastName)
+            descriptor.Field(t => t.ProfilePicUrl)
                 .Type<NonNullType<StringType>>();
 
         }
