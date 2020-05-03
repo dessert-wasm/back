@@ -16,7 +16,7 @@ namespace Dessert.Types
                 .Type<NonNullType<StringType>>();
 
             descriptor.Field(f => f.Link)
-                .Type<NonNullType<UrlType>>();
+                .Type<UrlType>();
         }
     }
 }
