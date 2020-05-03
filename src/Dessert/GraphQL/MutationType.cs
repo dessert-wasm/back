@@ -33,6 +33,12 @@ namespace Dessert.GraphQL
                 .Type<NonNullType<BooleanType>>();
 
             descriptor
+                .Field(t => t.DeleteCurrentUser(default, default, default))
+                .Name("deleteUser")
+                .Description("Delete the current user")
+                .Type<NonNullType<BooleanType>>();
+
+            descriptor
                 .Field(t => t.CreateToken(default, default, default, default))
                 .Authorize()
                 .Name("createToken")

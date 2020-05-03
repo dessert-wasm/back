@@ -77,6 +77,18 @@ namespace Dessert.GraphQL
             await signInManager.Context.SignOutAsync(IdentityConstants.ApplicationScheme);
             return true;
         }
+        
+        public async Task<bool> DeleteCurrentUser(IResolverContext context,
+            [Service] ApplicationDbContext applicationDbContext,
+            [Service] SignInManager<Account> signInManager)
+        {
+            var user = await signInManager.UserManager.GetUserAsync(signInManager.Context.User);
+
+            applicationDbContext.Users.Remove(user);
+            await applicationDbContext.SaveChangesAsync();
+
+            return true;
+        }
 
         public async Task<string> CreateToken(IResolverContext context,
             [Service] UserManager<Account> userManager,
