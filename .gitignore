@@ -6,4 +6,4 @@ logs
 *.user
 .vscode
 .DS_Store
-.sqlite
+*.sqlite
