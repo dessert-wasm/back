@@ -36,8 +36,9 @@ namespace Dessert.GraphQL
             long id,
             [Service] ApplicationDbContext applicationDbContext)
         {
-            return await context.BatchDataLoader<long, Account>(AccountById.Name, applicationDbContext.GetAccountById)
-                .LoadAsync(id);
+            return await applicationDbContext.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<List<ModuleTag>> Tags(IResolverContext context,
