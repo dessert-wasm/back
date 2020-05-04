@@ -100,7 +100,7 @@ namespace Dessert.GraphQL
             var token = new AuthToken()
             {
                 Description = description,
-                Account = account,
+                AccountId = account.Id,
                 Token = Guid.NewGuid().ToString(),
             };
 
