@@ -133,6 +133,7 @@ namespace Dessert.GraphQL
             string token,
             string name,
             string description,
+            string githubLink,
             bool isCore)
         {
             var account = await GetAccountFromToken(applicationDbContext, token);
@@ -145,7 +146,8 @@ namespace Dessert.GraphQL
                 IsCore = isCore,
                 PublishedDateTime = DateTime.Now,
                 LastUpdatedDateTime = DateTime.Now,
-                Author = account
+                Author = account,
+                GithubLink = githubLink,
             };
             applicationDbContext.Modules.Add(module);
 
