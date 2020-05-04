@@ -153,10 +153,17 @@ namespace Dessert.GraphQL
 
             foreach (var r in replacements)
             {
+                var replacement = new ModuleReplacement()
+                {
+                    Link = r.Link,
+                    Name = r.Name,
+                };
+                applicationDbContext.ModuleReplacements.Add(replacement);
+                
                 var moduleModuleReplacementRelation = new ModuleModuleReplacementRelation()
                 {
                     Module = module,
-                    ModuleReplacement = r,
+                    ModuleReplacement = replacement,
                 };
                 applicationDbContext.ModuleModuleReplacementRelations.Add(moduleModuleReplacementRelation);
             }
