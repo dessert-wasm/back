@@ -22,6 +22,9 @@ namespace Dessert.Types
 
             descriptor.Field(f => f.Description)
                 .Type<NonNullType<StringType>>();
+                
+            descriptor.Field(f => f.GithubLink)
+                .Type<UrlType>();
 
             descriptor.Field(f => f.PublishedDateTime)
                 .Type<NonNullType<DateTimeType>>();

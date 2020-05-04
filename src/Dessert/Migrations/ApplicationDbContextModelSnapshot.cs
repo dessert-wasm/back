@@ -148,6 +148,9 @@ namespace Dessert.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("GithubLink")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsCore")
                         .HasColumnType("INTEGER");
 

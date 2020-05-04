@@ -63,6 +63,7 @@ namespace Dessert.Persistance
                 PublishedDateTime = DateTime.Now,
                 LastUpdatedDateTime = DateTime.Now,
                 Author = account,
+                GithubLink = _faker.Random.Bool(0.8f) ? "https://github.com/DofMod/SmithMagic" : null,
                 IsCore = _faker.Random.Bool(),
             };
             await _db.Modules.AddAsync(module);

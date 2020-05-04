@@ -133,6 +133,7 @@ namespace Dessert.GraphQL
             string token,
             string name,
             string description,
+            string githubLink,
             bool isCore)
         {
             var account = await GetAccountFromToken(applicationDbContext, token);
@@ -145,16 +146,24 @@ namespace Dessert.GraphQL
                 IsCore = isCore,
                 PublishedDateTime = DateTime.Now,
                 LastUpdatedDateTime = DateTime.Now,
-                Author = account
+                Author = account,
+                GithubLink = githubLink,
             };
             applicationDbContext.Modules.Add(module);
 
             foreach (var r in replacements)
             {
+                var replacement = new ModuleReplacement()
+                {
+                    Link = r.Link,
+                    Name = r.Name,
+                };
+                applicationDbContext.ModuleReplacements.Add(replacement);
+                
                 var moduleModuleReplacementRelation = new ModuleModuleReplacementRelation()
                 {
                     Module = module,
-                    ModuleReplacement = r,
+                    ModuleReplacement = replacement,
                 };
                 applicationDbContext.ModuleModuleReplacementRelations.Add(moduleModuleReplacementRelation);
             }
