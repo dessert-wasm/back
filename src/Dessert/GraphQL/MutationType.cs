@@ -55,7 +55,7 @@ namespace Dessert.GraphQL
                 .Argument("token", x => x.Type<StringType>());
 
             descriptor
-                .Field(t => t.CreateModule(default, default, default, default, default, default))
+                .Field(t => t.CreateModule(default, default, default, default, default, default, default))
                 .Name("createModule")
                 .Description("Create a new module")
                 .Type<NonNullType<ModuleType>>()
@@ -63,6 +63,7 @@ namespace Dessert.GraphQL
                 .Argument("name", x => x.Type<NonNullType<StringType>>())
                 .Argument("description", x => x.Type<NonNullType<StringType>>())
                 .Argument("replacements", x => x.Type<NonNullType<ListType<NonNullType<ModuleReplacementInputType>>>>())
+                .Argument("githubLink", x => x.Type<UrlType>())
                 .Argument("isCore", x => x.Type<NonNullType<BooleanType>>());
 
             descriptor
