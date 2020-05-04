@@ -49,7 +49,7 @@ namespace Dessert
                     options.UseNpgsql(dbSettings.GetConnectionString());
                 else
                     throw new Exception($"cannot identify database type: {dbSettings.Type}");
-            });
+            }, ServiceLifetime.Transient);
             
             services.AddAuthorization(options =>
             {
