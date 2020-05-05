@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Dessert.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200502140337_InitialCreate")]
+    [Migration("20200504084352_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -148,6 +148,9 @@ namespace Dessert.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("GithubLink")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsCore")

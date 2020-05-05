@@ -100,7 +100,7 @@ namespace Dessert.GraphQL
             var token = new AuthToken()
             {
                 Description = description,
-                Account = account,
+                AccountId = account.Id,
                 Token = Guid.NewGuid().ToString(),
             };
 
@@ -133,6 +133,7 @@ namespace Dessert.GraphQL
             string token,
             string name,
             string description,
+            string githubLink,
             bool isCore)
         {
             var account = await GetAccountFromToken(applicationDbContext, token);
@@ -145,16 +146,24 @@ namespace Dessert.GraphQL
                 IsCore = isCore,
                 PublishedDateTime = DateTime.Now,
                 LastUpdatedDateTime = DateTime.Now,
-                Author = account
+                Author = account,
+                GithubLink = githubLink,
             };
             applicationDbContext.Modules.Add(module);
 
             foreach (var r in replacements)
             {
+                var replacement = new ModuleReplacement()
+                {
+                    Link = r.Link,
+                    Name = r.Name,
+                };
+                applicationDbContext.ModuleReplacements.Add(replacement);
+                
                 var moduleModuleReplacementRelation = new ModuleModuleReplacementRelation()
                 {
                     Module = module,
-                    ModuleReplacement = r,
+                    ModuleReplacement = replacement,
                 };
                 applicationDbContext.ModuleModuleReplacementRelations.Add(moduleModuleReplacementRelation);
             }
@@ -188,7 +197,7 @@ namespace Dessert.GraphQL
             var input = context.Argument<Account>("account");
             var account = await userManager.GetUserAsync(context.GetClaimsPrincipal());
 
-            account.UserName = input.UserName;
+            account.Nickname = input.Nickname;
             account.ProfilePicUrl = input.ProfilePicUrl;
 
             var result = await userManager.UpdateAsync(account);

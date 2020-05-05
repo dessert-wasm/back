@@ -167,6 +167,7 @@ namespace Dessert.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
+                    GithubLink = table.Column<string>(nullable: true),
                     AuthorId = table.Column<long>(nullable: false),
                     IsCore = table.Column<bool>(nullable: false),
                     PublishedDateTime = table.Column<DateTime>(nullable: false),
