@@ -197,7 +197,7 @@ namespace Dessert.GraphQL
             var input = context.Argument<Account>("account");
             var account = await userManager.GetUserAsync(context.GetClaimsPrincipal());
 
-            account.Nickname = input.UserName;
+            account.Nickname = input.Nickname;
             account.ProfilePicUrl = input.ProfilePicUrl;
 
             var result = await userManager.UpdateAsync(account);
