@@ -78,7 +78,7 @@ namespace Dessert
                     options =>
                     {
                         options.Cookie.Name = "auth";
-                        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                        options.ExpireTimeSpan = TimeSpan.FromDays(30);
                         options.SlidingExpiration = true;
                         options.Cookie.HttpOnly = true;
                         options.Cookie.SameSite = SameSiteMode.None;
@@ -110,7 +110,7 @@ namespace Dessert
 
             services.Configure<IdentityOptions>(options =>
             {
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromDays(30);
                 options.Lockout.MaxFailedAccessAttempts = 10;
                 options.Lockout.AllowedForNewUsers = true;
 
