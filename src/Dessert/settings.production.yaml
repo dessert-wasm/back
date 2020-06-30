@@ -3,7 +3,7 @@ AllowedOrigins:
   - "http://localhost:5000"
   - "https://dessert.dev"
   - "https://develop.dessert.dev"
-  - "https://*.vercel.app"
+  - "https://dessert.vercel.app"
 
 Database:
   Type: Postgres
