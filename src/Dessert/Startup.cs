@@ -174,11 +174,8 @@ namespace Dessert
 
             app.UseGraphQL();
 
-            if (_environment.IsDevelopment())
-            {
-                app.UsePlayground();
-                app.UseVoyager();
-            }
+            app.UsePlayground();
+            app.UseVoyager();
         }
     }
 }
