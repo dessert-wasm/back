@@ -1,8 +1,15 @@
 AllowedOrigins:
   - "http://localhost:3000"
   - "http://localhost:3001"
+  - "http://localhost:3002"
 
 Database:
-  Type: SQLite
-  SQLite:
-    Source: 'db.sqlite'
+  User: "postgres"
+  Password: "vide"
+  Database: "postgres"
+  Host: "localhost"
+  Port: 5432
+
+GitHub:
+  ClientId: "09f134a6a34343bc41be"
+  ClientSecret: "7de329ec76617844780ca50d6406616089b6e587"

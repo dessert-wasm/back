@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 using Bogus;
 using Dessert.Domain.Entities;
 using Dessert.Domain.Entities.Identity;
-using Dessert.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Dessert.Persistance
+namespace Dessert.Persistence
 {
     public class DbSeeder
     {
@@ -35,7 +34,7 @@ namespace Dessert.Persistance
         public async Task Seed()
         {
             _logger.LogInformation("Create database schema");
-            _db.Database.EnsureCreated();
+            await _db.Database.EnsureCreatedAsync();
 
             _logger.LogInformation("Create tags");
             await AddTags();
@@ -49,7 +48,7 @@ namespace Dessert.Persistance
             }
         }
 
-        private async Task<Module> CreateModule(
+        private Module CreateModule(
             string name,
             string desc,
             IEnumerable<ModuleReplacement> replacements,
@@ -64,10 +63,12 @@ namespace Dessert.Persistance
                 LastUpdatedDateTime = DateTime.Now,
                 Author = account,
                 GithubLink = _faker.Random.Bool(0.8f) ? "https://github.com/DofMod/SmithMagic" : null,
-                IsCore = _faker.Random.Bool(),
+                IsCore = _faker.Random.Bool()
             };
-            await _db.Modules.AddAsync(module);
-
+            _db.Modules.Add(module);
+            
+            _db.SaveChanges();
+            
             foreach (var r in replacements)
             {
                 var moduleModuleReplacementRelation = new ModuleModuleReplacementRelation()
@@ -75,7 +76,7 @@ namespace Dessert.Persistance
                     Module = module,
                     ModuleReplacement = r,
                 };
-                await _db.ModuleModuleReplacementRelations.AddAsync(moduleModuleReplacementRelation);
+                _db.ModuleModuleReplacementRelations.Add(moduleModuleReplacementRelation);
             }
 
             foreach (var tag in tags)
@@ -85,10 +86,10 @@ namespace Dessert.Persistance
                     Module = module,
                     ModuleTag = tag,
                 };
-                await _db.ModuleModuleTagRelations.AddAsync(moduleModuleTagRelation);
+                _db.ModuleModuleTagRelations.Add(moduleModuleTagRelation);
             }
 
-            await _db.SaveChangesAsync();
+            _db.SaveChanges();
 
             return module;
         }
@@ -113,7 +114,7 @@ namespace Dessert.Persistance
             var moduleCount = _options.FakesOptions.ModuleCount();
             for (int i = 0; i < moduleCount; i++)
             {
-                await CreateModule(
+                CreateModule(
                     _faker.Company.CatchPhrase(),
                     _faker.Lorem.Paragraphs(),
                     _faker.PickRandom(replacements, _options.FakesOptions.ReplacementPerModule()),

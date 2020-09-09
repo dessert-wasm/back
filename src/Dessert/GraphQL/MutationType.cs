@@ -13,6 +13,7 @@ namespace Dessert.GraphQL
             descriptor
                 .Field(t => t.Login(default, default, default, default))
                 .Name("login")
+                .Description("cookie login")
                 .Argument("email", arg => arg.Type<NonNullType<StringType>>())
                 .Argument("password", arg => arg.Type<NonNullType<StringType>>())
                 .Argument("remember", arg => arg.Type<NonNullType<BooleanType>>())
@@ -20,6 +21,7 @@ namespace Dessert.GraphQL
 
             descriptor
                 .Field(t => t.Register(default, default, default, default, default, default))
+                .Description("cookie register")
                 .Name("register")
                 .Argument("email", arg => arg.Type<NonNullType<StringType>>())
                 .Argument("nickname", arg => arg.Type<NonNullType<StringType>>())
@@ -28,6 +30,7 @@ namespace Dessert.GraphQL
 
             descriptor
                 .Field(t => t.Logout(default))
+                .Description("cookie logout")
                 .Name("logout")
                 .Authorize()
                 .Type<NonNullType<BooleanType>>();

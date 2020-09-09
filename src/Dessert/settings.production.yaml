@@ -5,11 +5,13 @@ AllowedOrigins:
   - "https://develop.dessert.dev"
   - "https://dessert.vercel.app"
 
+GitHub:
+  ClientId: "09f134a6a34343bc41be"
+  ClientSecret: "7de329ec76617844780ca50d6406616089b6e587"
+
 Database:
-  Type: Postgres
-  Postgres:
-    User: "back"
-    Password: "put_that_in_a_scret_you_foock"
-    Database: "back"
-    Host: "x2021dessert3090231965000.northeurope.cloudapp.azure.com"
-    Port: 5432
+  User: "back"
+  Password: "put_that_in_a_scret_you_foock"
+  Database: "back"
+  Host: "x2021dessert3090231965000.northeurope.cloudapp.azure.com"
+  Port: 5432

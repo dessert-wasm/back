@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +11,9 @@ using HotChocolate;
 using HotChocolate.Resolvers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -35,7 +38,7 @@ namespace Dessert.GraphQL
 
             if (account == null)
                 throw new Exception("invalid credentials");
-
+            
             var passwordResult = await signInManager.CheckPasswordSignInAsync(account, password, false);
             if (!passwordResult.Succeeded)
                 throw new Exception("invalid password");
@@ -59,9 +62,9 @@ namespace Dessert.GraphQL
                 UserName = email,
                 Email = email,
                 Nickname = nickname,
-                ProfilePicUrl = "https://www.bbcgoodfood.com/sites/default/files/recipe-collections/collection-image/2018/09/dessert-main-image-molten-cake.jpg"
+                ProfilePicUrl = "https://i.imgur.com/JrLLeco.jpg"
             };
-
+            
             var result = await userManager.CreateAsync(account, password);
             if (!result.Succeeded)
             {
@@ -74,7 +77,7 @@ namespace Dessert.GraphQL
 
         public async Task<bool> Logout([Service] SignInManager<Account> signInManager)
         {
-            await signInManager.Context.SignOutAsync(IdentityConstants.ApplicationScheme);
+            await signInManager.Context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return true;
         }
         
