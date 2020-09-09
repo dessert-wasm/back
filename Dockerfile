@@ -24,4 +24,6 @@ WORKDIR /app
 # Binaries
 COPY --from=build /app ./
 
+ENV ASPNETCORE_ENVIRONMENT=Development
+
 ENTRYPOINT ["./Dessert", "start"]
