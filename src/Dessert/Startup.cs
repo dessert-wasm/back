@@ -182,7 +182,7 @@ namespace Dessert
             app.UseCors();
 
             app.UseGraphQL();
-            
+         
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
