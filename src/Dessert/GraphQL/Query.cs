@@ -66,8 +66,7 @@ namespace Dessert.GraphQL
             var sqlQuery = applicationDbContext.Modules
                 .AsNoTracking()
                 .Where(x =>
-                    EF.Functions.Like(x.Name, query) ||
-                    EF.Functions.Like(x.Description, query));
+                    EF.Functions.TrigramsAreWordSimilar(x.Name, query));
 
             if (type.HasValue)
             {
