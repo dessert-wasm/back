@@ -23,6 +23,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 
 namespace Dessert
 {
@@ -46,7 +47,11 @@ namespace Dessert
                     if (dbSettings == null)
                         throw new Exception("No Database configuration found");
 
-                    options.UseNpgsql(dbSettings.GetConnectionString());
+                    options.UseNpgsql(dbSettings.GetConnectionString(),
+                        opt =>
+                        {
+                            opt.UseTrigrams();
+                        });
                     options.EnableSensitiveDataLogging();
                 },
                 ServiceLifetime.Transient);
