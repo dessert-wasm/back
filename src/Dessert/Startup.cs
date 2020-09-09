@@ -79,7 +79,7 @@ namespace Dessert
                         options.Scope.Add("user:email");
                         options.CorrelationCookie.HttpOnly = true;
                         options.CorrelationCookie.SameSite = SameSiteMode.None;
-                        options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.None;
+                        options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
                     })
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,//IdentityConstants.ApplicationScheme,
                     options =>
@@ -89,7 +89,7 @@ namespace Dessert
                         options.SlidingExpiration = true;
                         options.Cookie.HttpOnly = true;
                         options.Cookie.SameSite = SameSiteMode.None;
-                        options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+                        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                         options.Events = new CookieAuthenticationEvents
                         {
                             OnRedirectToLogin = redirectContext =>
