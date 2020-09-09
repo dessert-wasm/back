@@ -61,8 +61,6 @@ namespace Dessert.GraphQL
         {
             var paginationQuery = context.GetPaginationQuery();
 
-            query = $"%{query}%";
-
             var sqlQuery = applicationDbContext.Modules
                 .AsNoTracking()
                 .Where(x =>
