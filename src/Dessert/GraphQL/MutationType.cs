@@ -11,7 +11,7 @@ namespace Dessert.GraphQL
             descriptor.BindFieldsExplicitly();
 
             descriptor
-                .Field(t => t.Login(default, default, default, default))
+                .Field(t => t.Login(default, default, default, default, default))
                 .Name("login")
                 .Description("cookie login")
                 .Argument("email", arg => arg.Type<NonNullType<StringType>>())
@@ -30,7 +30,7 @@ namespace Dessert.GraphQL
 
             descriptor
                 .Field(t => t.Logout(default))
-                .Description("cookie logout")
+                .Description("general logout")
                 .Name("logout")
                 .Authorize()
                 .Type<NonNullType<BooleanType>>();
