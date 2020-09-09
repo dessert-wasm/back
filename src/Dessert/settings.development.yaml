@@ -11,6 +11,6 @@ Database:
   Port: 5432
 
 GitHub:
-  ClientId: ""
-  ClientSecret: ""
+  ClientId: "123"
+  ClientSecret: "123"
   RedirectUrl: "https://dessert.dev/"
