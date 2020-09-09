@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using AspNet.Security.OAuth.GitHub;
 using Dessert.Authorization;
 using Dessert.Domain.Entities.Identity;
 using Dessert.GraphQL;
@@ -11,11 +12,13 @@ using HotChocolate.AspNetCore.Voyager;
 using HotChocolate.Configuration;
 using HotChocolate.Execution.Configuration;
 using HotChocolate.Types;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,24 +41,19 @@ namespace Dessert
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                var dbSettings = _configuration.GetSection("Database").Get<DatabaseSettings>();
-                if (dbSettings == null)
-                    throw new Exception("No Database configuration found");
+                {
+                    var dbSettings = _configuration.GetSection("Database").Get<DatabaseSettings>();
+                    if (dbSettings == null)
+                        throw new Exception("No Database configuration found");
 
-                if (dbSettings.DatabaseTypeEnum == DatabaseTypeEnum.SQLite)
-                    options.UseSqlite(dbSettings.GetConnectionString());
-                else if (dbSettings.DatabaseTypeEnum == DatabaseTypeEnum.Postgres)
                     options.UseNpgsql(dbSettings.GetConnectionString());
-                else
-                    throw new Exception($"cannot identify database type: {dbSettings.Type}");
-            }, ServiceLifetime.Transient);
-            
+                },
+                ServiceLifetime.Transient);
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(PolicyConstants.RequireAdministrator, Policies.RequireAdministrator);
             });
-
 
             services.AddIdentityCore<Account>()
                 .AddRoles<AccountRole>()
@@ -67,12 +65,17 @@ namespace Dessert
 
             services.AddRouting();
 
-            services.AddAuthentication(
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                })
+                .AddGitHub(GitHubAuthenticationDefaults.AuthenticationScheme,
                     options =>
                     {
-                        options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
-                        options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
-                        options.DefaultSignInScheme = IdentityConstants.ApplicationScheme;
+                        options.ClientId = _configuration["GitHub:ClientId"];
+                        options.ClientSecret = _configuration["GitHub:ClientSecret"];
+                        options.Scope.Add("user:email");
                     })
                 .AddCookie(IdentityConstants.ApplicationScheme,
                     options =>
@@ -87,22 +90,22 @@ namespace Dessert
                         {
                             OnRedirectToLogin = redirectContext =>
                             {
-                                redirectContext.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                                redirectContext.HttpContext.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
                                 return Task.CompletedTask;
                             },
                             OnRedirectToLogout = redirectContext =>
                             {
-                                redirectContext.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                                redirectContext.HttpContext.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
                                 return Task.CompletedTask;
                             },
                             OnRedirectToAccessDenied = redirectContext =>
                             {
-                                redirectContext.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                                redirectContext.HttpContext.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
                                 return Task.CompletedTask;
                             }
                         };
                     });
-            
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.MinimumSameSitePolicy = SameSiteMode.None;
@@ -126,14 +129,14 @@ namespace Dessert
 
                 options.User.RequireUniqueEmail = true;
             });
-            
+
             services.AddCors(options =>
             {
                 var allowedOrigins = _configuration.GetSection("AllowedOrigins").Get<string[]>();
                 if (allowedOrigins == null)
                     throw new Exception("No AllowedOrigins configuration found");
-                
-                options.AddDefaultPolicy(policy => 
+
+                options.AddDefaultPolicy(policy =>
                     policy.SetIsOriginAllowedToAllowWildcardSubdomains()
                         .WithOrigins(allowedOrigins)
                         .AllowAnyMethod()
@@ -159,6 +162,8 @@ namespace Dessert
                         _environment.IsDevelopment() ? TracingPreference.OnDemand : TracingPreference.Never,
                 }
             );
+            
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -173,6 +178,11 @@ namespace Dessert
             app.UseCors();
 
             app.UseGraphQL();
+            
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapDefaultControllerRoute();
+            });
 
             app.UsePlayground();
             app.UseVoyager();

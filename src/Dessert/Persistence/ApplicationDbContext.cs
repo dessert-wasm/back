@@ -2,6 +2,7 @@
 using Dessert.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Dessert.Persistence
 {
@@ -26,7 +27,7 @@ namespace Dessert.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
+            
             // Account
             modelBuilder.Entity<Account>()
                 .ToTable("account");
@@ -34,15 +35,27 @@ namespace Dessert.Persistence
             // Auth token
             modelBuilder.Entity<AuthToken>()
                 .ToTable("auth_token");
+            modelBuilder.Entity<AuthToken>()
+                .HasIndex(x => x.Token).IsUnique();
+            modelBuilder.Entity<AuthToken>()
+                .HasIndex(x => x.AccountId);
 
             // Module
             modelBuilder.Entity<Module>()
                 .ToTable("module");
+            
+            modelBuilder.Entity<Module>()
+                .HasIndex(x => x.AuthorId).IsUnique(false);
+
+            modelBuilder.Entity<Module>()
+                .HasIndex(b => b.Name)
+                .HasMethod("gin")
+                .HasOperators("gin_trgm_ops");
 
             // Module tag
             modelBuilder.Entity<ModuleTag>()
                 .ToTable("module_tag");
-
+            
             // Module to tag relation
             modelBuilder.Entity<ModuleModuleTagRelation>()
                 .ToTable("module__module_tag");
@@ -64,7 +77,7 @@ namespace Dessert.Persistence
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-             // optionsBuilder.UseSqlite("Data Source=db.sqlite");
+              //optionsBuilder.UseSqlite("Data Source=db.sqlite");
         }
     }
 }
