@@ -78,7 +78,7 @@ namespace Dessert
                         options.ClientSecret = _configuration["GitHub:ClientSecret"];
                         options.Scope.Add("user:email");
                         options.CorrelationCookie.HttpOnly = true;
-                        options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+                        options.CorrelationCookie.SameSite = SameSiteMode.None;
                         options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.None;
                     })
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,//IdentityConstants.ApplicationScheme,
@@ -88,7 +88,7 @@ namespace Dessert
                         options.ExpireTimeSpan = TimeSpan.FromDays(30);
                         options.SlidingExpiration = true;
                         options.Cookie.HttpOnly = true;
-                        options.Cookie.SameSite = SameSiteMode.Lax;
+                        options.Cookie.SameSite = SameSiteMode.None;
                         options.Cookie.SecurePolicy = CookieSecurePolicy.None;
                         options.Events = new CookieAuthenticationEvents
                         {
