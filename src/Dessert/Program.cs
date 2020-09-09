@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Dessert.Persistance;
+using Dessert.Persistence;
 using Dessert.Utilities.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.CommandLineUtils;
@@ -77,7 +77,7 @@ namespace Dessert
                                 var rng = new Random();
                                 dbFakesOptions = new DbFakesOptions()
                                 {
-                                    ModuleCount = () => rng.Next(250, 400),
+                                    ModuleCount = () => 5000,
                                     ReplacementsCount = () => rng.Next(50, 100),
                                     ReplacementPerModule = () => rng.Next(0, 3),
                                     TagPerModule = () => rng.Next(2, 6),

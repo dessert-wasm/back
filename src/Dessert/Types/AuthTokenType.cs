@@ -16,13 +16,7 @@ namespace Dessert.Types
                 .Type<NonNullType<StringType>>();
 
             descriptor.Field(f => f.Token)
-                .Type<NonNullType<StringType>>()
-                .Resolver(ctx =>
-                {
-                    var authToken = ctx.Parent<AuthToken>();
-
-                    return authToken.Token.Substring(0, 8);
-                });
+                .Type<NonNullType<StringType>>();
         }
     }
 }

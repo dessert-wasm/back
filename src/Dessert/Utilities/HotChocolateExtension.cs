@@ -1,3 +1,4 @@
+using System;
 using System.Security.Claims;
 using Dessert.Types.Pagination;
 using Dessert.Utilities.Pagination;
@@ -27,5 +28,15 @@ namespace Dessert.Utilities
             return context.Argument<PaginationQuery>(PaginationArgumentName);
         }
 
+        public static string GetEmail(this ClaimsPrincipal claimsPrincipal)
+        {
+            var fromEmail = claimsPrincipal.FindFirst(ClaimTypes.Email);
+            if (fromEmail != null)
+                return fromEmail.Value;
+            var fromName = claimsPrincipal.FindFirst(ClaimTypes.Name);
+            if (fromName != null)
+                return fromName.Value;
+            throw new Exception("you got no claim :/");
+        }
     }
 }

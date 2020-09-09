@@ -1,6 +1,8 @@
 using System;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Dessert.Domain.Entities;
 using Dessert.Domain.Entities.Identity;
@@ -10,7 +12,9 @@ using HotChocolate;
 using HotChocolate.Resolvers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -29,6 +33,7 @@ namespace Dessert.GraphQL
             string email,
             string password,
             bool remember,
+            [Service] IHttpContextAccessor contextAccessor,
             [Service] SignInManager<Account> signInManager)
         {
             var account = await signInManager.UserManager.FindByEmailAsync(email);
@@ -39,7 +44,14 @@ namespace Dessert.GraphQL
             var passwordResult = await signInManager.CheckPasswordSignInAsync(account, password, false);
             if (!passwordResult.Succeeded)
                 throw new Exception("invalid password");
-            await signInManager.SignInAsync(account, remember, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var userPrincipal = await signInManager.CreateUserPrincipalAsync(account);
+            await contextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                userPrincipal,
+                new AuthenticationProperties
+                {
+                    IsPersistent = remember,
+                });
             return account;
         }
 
@@ -59,9 +71,9 @@ namespace Dessert.GraphQL
                 UserName = email,
                 Email = email,
                 Nickname = nickname,
-                ProfilePicUrl = "https://www.bbcgoodfood.com/sites/default/files/recipe-collections/collection-image/2018/09/dessert-main-image-molten-cake.jpg"
+                ProfilePicUrl = "https://i.imgur.com/JrLLeco.jpg"
             };
-
+            
             var result = await userManager.CreateAsync(account, password);
             if (!result.Succeeded)
             {
@@ -74,7 +86,7 @@ namespace Dessert.GraphQL
 
         public async Task<bool> Logout([Service] SignInManager<Account> signInManager)
         {
-            await signInManager.Context.SignOutAsync(IdentityConstants.ApplicationScheme);
+            await signInManager.Context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return true;
         }
         
@@ -82,10 +94,10 @@ namespace Dessert.GraphQL
             [Service] ApplicationDbContext applicationDbContext,
             [Service] SignInManager<Account> signInManager)
         {
-            var user = await signInManager.UserManager.GetUserAsync(signInManager.Context.User);
+            // var account = await signInManager.UserManager.GetUserAsync(context.GetClaimsPrincipal());
 
-            applicationDbContext.Users.Remove(user);
-            await applicationDbContext.SaveChangesAsync();
+            // applicationDbContext.Users.Remove(account);
+            // await applicationDbContext.SaveChangesAsync();
 
             return true;
         }
@@ -95,8 +107,9 @@ namespace Dessert.GraphQL
             [Service] ApplicationDbContext applicationDbContext,
             string description)
         {
-            var account = await userManager.GetUserAsync(context.GetClaimsPrincipal());
-
+            var email = context.GetClaimsPrincipal().GetEmail();
+            var account = await userManager.FindByEmailAsync(email);
+            
             var token = new AuthToken()
             {
                 Description = description,
@@ -195,7 +208,8 @@ namespace Dessert.GraphQL
             [Service] UserManager<Account> userManager)
         {
             var input = context.Argument<Account>("account");
-            var account = await userManager.GetUserAsync(context.GetClaimsPrincipal());
+            var email = context.GetClaimsPrincipal().GetEmail();
+            var account = await userManager.FindByEmailAsync(email);
 
             account.Nickname = input.Nickname;
             account.ProfilePicUrl = input.ProfilePicUrl;

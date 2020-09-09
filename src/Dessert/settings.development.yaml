@@ -1,8 +1,16 @@
 AllowedOrigins:
   - "http://localhost:3000"
   - "http://localhost:3001"
+  - "http://localhost:3002"
 
 Database:
-  Type: SQLite
-  SQLite:
-    Source: 'db.sqlite'
+  User: "postgres"
+  Password: "vide"
+  Database: "postgres"
+  Host: "localhost"
+  Port: 5432
+
+GitHub:
+  ClientId: ""
+  ClientSecret: ""
+  RedirectUrl: "https://dessert.dev/"

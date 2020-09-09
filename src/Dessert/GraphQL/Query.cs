@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Dessert.DataLoaders;
 using Dessert.Domain.Entities;
@@ -21,7 +23,10 @@ namespace Dessert.GraphQL
     {
         public async Task<Account> Me(IResolverContext context, [Service] SignInManager<Account> signInManager)
         {
-            return await signInManager.UserManager.GetUserAsync(signInManager.Context.User);
+            var email = signInManager.Context.User.GetEmail();
+            var acc = await signInManager.UserManager.FindByEmailAsync(email);
+            return acc;
+            //return await signInManager.UserManager.GetUserAsync(signInManager.Context.User);
         }
 
         public async Task<Module> Module(IResolverContext context,

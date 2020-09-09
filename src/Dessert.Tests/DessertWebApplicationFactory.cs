@@ -1,5 +1,4 @@
 using System;
-using Dessert.Persistance;
 using Dessert.Persistence;
 using GraphQL.Client.Http;
 using Microsoft.AspNetCore.Hosting;
@@ -61,20 +60,20 @@ namespace Dessert.Tests
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.ConfigureServices(services =>
-            {
-                // Create a new service provider.
-                var serviceProvider = new ServiceCollection()
-                    .AddEntityFrameworkInMemoryDatabase()
-                    .BuildServiceProvider();
+            // builder.ConfigureServices(services =>
+            // {
+            //     // Create a new service provider.
+            //     var serviceProvider = new ServiceCollection()
+            //         .AddEntityFrameworkInMemoryDatabase()
+            //         .BuildServiceProvider();
 
-                // in memory database for testing.
-                services.AddDbContext<ApplicationDbContext>(options =>
-                {
-                    options.UseInMemoryDatabase("InMemoryDbForTesting");
-                    options.UseInternalServiceProvider(serviceProvider);
-                });
-            });
+            //     // in memory database for testing.
+            //     services.AddDbContext<ApplicationDbContext>(options =>
+            //     {
+            //         options.UseInMemoryDatabase("InMemoryDbForTesting");
+            //         options.UseInternalServiceProvider(serviceProvider);
+            //     });
+            // });
         }
     }
 }
