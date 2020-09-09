@@ -13,3 +13,4 @@ Database:
 GitHub:
   ClientId: "09f134a6a34343bc41be"
   ClientSecret: "7de329ec76617844780ca50d6406616089b6e587"
+  RedirectUrl: "https://dessert.dev/"

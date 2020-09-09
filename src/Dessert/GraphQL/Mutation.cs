@@ -2,6 +2,7 @@ using System;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Dessert.Domain.Entities;
 using Dessert.Domain.Entities.Identity;
@@ -32,17 +33,25 @@ namespace Dessert.GraphQL
             string email,
             string password,
             bool remember,
+            [Service] IHttpContextAccessor contextAccessor,
             [Service] SignInManager<Account> signInManager)
         {
             var account = await signInManager.UserManager.FindByEmailAsync(email);
 
             if (account == null)
                 throw new Exception("invalid credentials");
-            
+
             var passwordResult = await signInManager.CheckPasswordSignInAsync(account, password, false);
             if (!passwordResult.Succeeded)
                 throw new Exception("invalid password");
-            await signInManager.SignInAsync(account, remember, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var userPrincipal = await signInManager.CreateUserPrincipalAsync(account);
+            await contextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                userPrincipal,
+                new AuthenticationProperties
+                {
+                    IsPersistent = remember,
+                });
             return account;
         }
 
@@ -85,10 +94,10 @@ namespace Dessert.GraphQL
             [Service] ApplicationDbContext applicationDbContext,
             [Service] SignInManager<Account> signInManager)
         {
-            var user = await signInManager.UserManager.GetUserAsync(signInManager.Context.User);
+            // var account = await signInManager.UserManager.GetUserAsync(context.GetClaimsPrincipal());
 
-            applicationDbContext.Users.Remove(user);
-            await applicationDbContext.SaveChangesAsync();
+            // applicationDbContext.Users.Remove(account);
+            // await applicationDbContext.SaveChangesAsync();
 
             return true;
         }
@@ -98,8 +107,9 @@ namespace Dessert.GraphQL
             [Service] ApplicationDbContext applicationDbContext,
             string description)
         {
-            var account = await userManager.GetUserAsync(context.GetClaimsPrincipal());
-
+            var email = context.GetClaimsPrincipal().GetEmail();
+            var account = await userManager.FindByEmailAsync(email);
+            
             var token = new AuthToken()
             {
                 Description = description,
@@ -198,7 +208,8 @@ namespace Dessert.GraphQL
             [Service] UserManager<Account> userManager)
         {
             var input = context.Argument<Account>("account");
-            var account = await userManager.GetUserAsync(context.GetClaimsPrincipal());
+            var email = context.GetClaimsPrincipal().GetEmail();
+            var account = await userManager.FindByEmailAsync(email);
 
             account.Nickname = input.Nickname;
             account.ProfilePicUrl = input.ProfilePicUrl;
