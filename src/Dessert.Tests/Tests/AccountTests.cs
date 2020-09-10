@@ -38,8 +38,8 @@ namespace Dessert.Tests.Tests
             
 
             var account = login_response.GetDataFieldAs<Account>("login");
-           //  Assert.Equal("Eleanor", account.FirstName);
-           //  Assert.Equal("Shellstrop", account.LastName);
+           //  Assertions.Equal("Eleanor", account.FirstName);
+           //  Assertions.Equal("Shellstrop", account.LastName);
             
             var response = await client.SendQueryAsync(new GraphQLRequest
             {
@@ -61,13 +61,13 @@ namespace Dessert.Tests.Tests
                 }
             });
 
-            Assert.Null(response.Errors);
-            Assert.NotNull(response.Data);
+            Assertions.Null(response.Errors);
+            Assertions.NotNull(response.Data);
             
             var updatedAccount = response.GetDataFieldAs<Account>("updateUser");
             
-            // Assert.Equal("Eleaanor", updatedAccount.FirstName);
-            // Assert.Equal("Oui", updatedAccount.LastName);
+            Assertions.Equal("Eleaanor", updatedAccount.Nickname);
+             Assertions.Equal("Oui", updatedAccount.Email);
             
             var me_response = await client.SendQueryAsync(new GraphQLRequest
             {
@@ -83,10 +83,10 @@ namespace Dessert.Tests.Tests
             });
             var me = me_response.GetDataFieldAs<Account>("me");
             
-            Assert.Null(me_response.Errors);
-            Assert.NotNull(me_response.Data);
-            // Assert.Equal("Eleaanor", me.FirstName);
-            // Assert.Equal("Oui", me.LastName);
+            Assertions.Null(me_response.Errors);
+            Assertions.NotNull(me_response.Data);
+            Assertions.Equal("Eleaanor", me.Nickname);
+            Assertions.Equal("Oui", me.Email);
         }
     }
 }
