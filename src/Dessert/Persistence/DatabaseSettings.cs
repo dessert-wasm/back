@@ -22,7 +22,7 @@ namespace Dessert.Persistence
                     Port = Port,
                     Pooling = true,
                     MinPoolSize = 1,
-                    MaxPoolSize = 1,
+                    MaxPoolSize = 100,
                 }
                 .ToString();
         }

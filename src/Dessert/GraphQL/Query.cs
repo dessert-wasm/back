@@ -68,8 +68,8 @@ namespace Dessert.GraphQL
 
             if (type.HasValue)
             {
-                sqlQuery = sqlQuery
-                    .Where(x => x.IsCore == (type.Value == ModuleTypeEnum.Core));
+                // sqlQuery = sqlQuery
+                //     .Where(x => x.IsCore == (type.Value == ModuleTypeEnum.Core));
             }
 
             var orderedQuery = sqlQuery.OrderByDescending(x => x.LastUpdatedDateTime);
