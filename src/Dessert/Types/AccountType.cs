@@ -56,6 +56,9 @@ namespace Dessert.Types
 
             descriptor.Field(f => f.Nickname)
                 .Type<NonNullType<StringType>>();
+
+            descriptor.Field(f => f.Email)
+                .Type<NonNullType<StringType>>();
         }
     }
 }
