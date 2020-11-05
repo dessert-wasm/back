@@ -68,6 +68,8 @@ namespace Dessert.GraphQL
                     EF.Functions.Like(x.Description, query) ||
                     EF.Functions.Like(x.GithubLink, query) ||
                     EF.Functions.Like(x.Author.Nickname, query) ||
+                    applicationDbContext.ModuleModuleReplacementRelations
+                        .Any(t => t.ModuleId == x.Id && (EF.Functions.Like(t.ModuleReplacement.Name, query) || EF.Functions.Like(t.ModuleReplacement.Link, query))) ||
                     applicationDbContext.ModuleModuleTagRelations
                         .Any(t => t.ModuleId == x.Id && EF.Functions.Like(t.ModuleTag.Name, query)));
             if (type.HasValue)
