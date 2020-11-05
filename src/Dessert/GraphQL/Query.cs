@@ -60,20 +60,18 @@ namespace Dessert.GraphQL
             [Service] ApplicationDbContext applicationDbContext)
         {
             var paginationQuery = context.GetPaginationQuery();
-
+            query = $"%{query}%";
             var sqlQuery = applicationDbContext.Modules
                 .AsNoTracking()
                 .Where(x =>
-                    EF.Functions.TrigramsAreSimilar(query, x.Name));
-
+                    EF.Functions.Like(x.Name, query) ||
+                    EF.Functions.Like(x.Description, query));
             if (type.HasValue)
             {
-                // sqlQuery = sqlQuery
-                //     .Where(x => x.IsCore == (type.Value == ModuleTypeEnum.Core));
+                sqlQuery = sqlQuery
+                    .Where(x => x.IsCore == (type.Value == ModuleTypeEnum.Core));
             }
-
             var orderedQuery = sqlQuery.OrderByDescending(x => x.LastUpdatedDateTime);
-
             return await Paginator.GetPaginatedResult(paginationQuery, orderedQuery);
         }
 
