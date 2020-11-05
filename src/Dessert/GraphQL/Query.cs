@@ -65,7 +65,9 @@ namespace Dessert.GraphQL
                 .AsNoTracking()
                 .Where(x =>
                     EF.Functions.Like(x.Name, query) ||
-                    EF.Functions.Like(x.Description, query));
+                    EF.Functions.Like(x.Description, query) ||
+                    applicationDbContext.ModuleModuleTagRelations
+                        .Any(t => t.ModuleId == x.Id && EF.Functions.Like(t.ModuleTag.Name, query)));
             if (type.HasValue)
             {
                 sqlQuery = sqlQuery
