@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Bogus;
 using Dessert.Domain.Entities;
 using Dessert.Domain.Entities.Identity;
-using Dessert.Persistence;
 using GraphQL.Common.Request;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
@@ -65,7 +64,7 @@ namespace Dessert.Tests.Tests
                     }
                 }
             });
-            var account = response.GetDataFieldAs<Account>("login");
+            var account = response.GetDataFieldAs<ApplicationUser>("login");
 
             Assertions.Equal("Eleanor", account.UserName);
             Assertions.Empty(response.Data);//["login"]["tokens"]);
@@ -181,7 +180,7 @@ namespace Dessert.Tests.Tests
                 ",
                 });
                 // TODO: This now only checks for the first page of modules with a pageSize of 50
-                account = response.GetDataFieldAs<Account>("me");
+                account = response.GetDataFieldAs<ApplicationUser>("me");
                 //var receivedModules = (response.Data["me"]["modules"]["result"] as JArray)?.ToObject<List<Module>>();
                 Assertions.Equal(modulesToCheck.Count, 2);
                 // foreach (var receivedModule in receivedModules)

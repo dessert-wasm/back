@@ -16,7 +16,7 @@ namespace Dessert.Controllers
         }
         
         [HttpPost("~/register")]
-        public async Task<IActionResult> Register([FromForm] string provider)
+        public IActionResult Register([FromForm] string provider)
         {
             // Note: the "provider" parameter corresponds to the external
             // authentication provider choosen by the user agent.
@@ -32,7 +32,7 @@ namespace Dessert.Controllers
         }
         
         [HttpPost("~/signin")]
-        public async Task<IActionResult> SignIn([FromForm] string provider)
+        public IActionResult SignIn([FromForm] string provider)
         {
             // Note: the "provider" parameter corresponds to the external
             // authentication provider choosen by the user agent.

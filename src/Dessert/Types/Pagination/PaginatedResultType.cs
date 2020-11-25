@@ -1,4 +1,4 @@
-using Dessert.Utilities.Pagination;
+using Dessert.Domain.Pagination;
 using HotChocolate.Types;
 
 namespace Dessert.Types.Pagination

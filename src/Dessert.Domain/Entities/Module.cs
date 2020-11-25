@@ -14,7 +14,7 @@ namespace Dessert.Domain.Entities
         public DateTime PublishedDateTime { get; set; }
         public DateTime LastUpdatedDateTime { get; set; }
 
-        public Account Author { get; set; }
+        public ApplicationUser Author { get; set; }
         //published ?
     }
 }

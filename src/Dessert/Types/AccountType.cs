@@ -1,21 +1,19 @@
-using System.Linq;
+using Dessert.Application.Repositories;
 using Dessert.DataLoaders;
 using Dessert.Domain.Entities;
 using Dessert.Domain.Entities.Identity;
-using Dessert.Persistence;
+using Dessert.Infrastructure.Repositories;
 using Dessert.Types.Pagination;
 using Dessert.Utilities;
-using Dessert.Utilities.Pagination;
 using GreenDonut;
 using HotChocolate.Resolvers;
 using HotChocolate.Types;
-using Microsoft.EntityFrameworkCore;
 
 namespace Dessert.Types
 {
-    public class AccountType : ObjectType<Account>
+    public class AccountType : ObjectType<IUser>
     {
-        protected override void Configure(IObjectTypeDescriptor<Account> descriptor)
+        protected override void Configure(IObjectTypeDescriptor<IUser> descriptor)
         {
             descriptor.BindFieldsExplicitly();
 
@@ -26,11 +24,10 @@ namespace Dessert.Types
                 .Type<NonNullType<ListType<NonNullType<AuthTokenType>>>>()
                 .Resolver(ctx =>
                 {
-                    var dataContext = ctx.Service<ApplicationDbContext>();
-                    var account = ctx.Parent<Account>();
+                    var dataContext = ctx.DataLoader<AuthTokensByAccountId>();
+                    var account = ctx.Parent<IUser>();
 
-                    return ctx.GroupDataLoader<long, AuthToken>(AuthTokensByAccountId.Name,
-                        dataContext.GetAuthTokensByAccountId).LoadAsync(account.Id);
+                    return dataContext.LoadAsync(account.Id);
                 });
 
             descriptor.Field("modules")
@@ -40,15 +37,10 @@ namespace Dessert.Types
                 {
                     var paginationQuery = ctx.GetPaginationQuery();
 
-                    var dataContext = ctx.Service<ApplicationDbContext>();
-                    var account = ctx.Parent<Account>();
+                    var moduleRepository = ctx.Service<IModuleRepository>();
+                    var account = ctx.Parent<IUser>();
 
-                    var sqlQuery = dataContext.Modules
-                        .AsNoTracking()
-                        .Where(x => x.AuthorId == account.Id)
-                        .OrderByDescending(x => x.LastUpdatedDateTime);
-
-                    return Paginator.GetPaginatedResult(paginationQuery, sqlQuery);
+                    return moduleRepository.GetModulesByAuthorId(account.Id, paginationQuery);
                 });
 
             descriptor.Field(f => f.ProfilePicUrl)

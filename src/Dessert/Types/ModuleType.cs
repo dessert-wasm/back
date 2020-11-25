@@ -1,7 +1,5 @@
 using Dessert.DataLoaders;
 using Dessert.Domain.Entities;
-using Dessert.Domain.Entities.Identity;
-using Dessert.Persistence;
 using GreenDonut;
 using HotChocolate.Resolvers;
 using HotChocolate.Types;
@@ -39,33 +37,30 @@ namespace Dessert.Types
                 .Type<NonNullType<AccountType>>()
                 .Resolver(ctx =>
                 {
-                    var dataContext = ctx.Service<ApplicationDbContext>();
+                    var dataContext = ctx.DataLoader<AccountById>();
                     var module = ctx.Parent<Module>();
 
-                    return ctx.BatchDataLoader<long, Account>(AccountById.Name,
-                        dataContext.GetAccountById).LoadAsync(module.AuthorId);
+                    return dataContext.LoadAsync(module.AuthorId);
                 });
 
             descriptor.Field("tags")
                 .Type<NonNullType<ListType<NonNullType<ModuleTagType>>>>()
                 .Resolver(ctx =>
                 {
-                    var dataContext = ctx.Service<ApplicationDbContext>();
+                    var dataContext = ctx.DataLoader<ModuleTagsByModuleId>();
                     var module = ctx.Parent<Module>();
 
-                    return ctx.GroupDataLoader<long, ModuleTag>(ModuleTagsByModuleId.Name,
-                        dataContext.GetModuleTagsByModuleId).LoadAsync(module.Id);
+                    return dataContext.LoadAsync(module.Id);
                 });
 
             descriptor.Field("replacements")
                 .Type<NonNullType<ListType<NonNullType<ModuleReplacementType>>>>()
                 .Resolver(ctx =>
                 {
-                    var dataContext = ctx.Service<ApplicationDbContext>();
+                    var dataContext = ctx.DataLoader<ModuleReplacementByModuleId>();
                     var module = ctx.Parent<Module>();
 
-                    return ctx.GroupDataLoader<long, ModuleReplacement>(ModuleReplacementByModuleId.Name,
-                        dataContext.GetModuleReplacementByModuleId).LoadAsync(module.Id);
+                    return dataContext.LoadAsync(module.Id);
                 });
         }
     }

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Dessert.Application\Dessert.Application.csproj" />
+      <ProjectReference Include="..\Dessert.Domain\Dessert.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.1.2" />
+      <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.2" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.6" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.6" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.2" />
+    </ItemGroup>
+
+</Project>

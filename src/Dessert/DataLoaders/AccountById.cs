@@ -1,26 +1,25 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Dessert.Application.Interfaces;
 using Dessert.Domain.Entities.Identity;
-using Dessert.Persistence;
-using Microsoft.EntityFrameworkCore;
+using HotChocolate.DataLoader;
 
 namespace Dessert.DataLoaders
 {
-    public static class AccountById
+    public class AccountById : BatchDataLoader<long, ApplicationUser>
     {
-        public const string Name = nameof(AccountById);
+        private readonly IIdentityService _identityService;
 
-        public static async Task<IReadOnlyDictionary<long, Account>> GetAccountById(
-            this ApplicationDbContext applicationDbContext,
-            IReadOnlyList<long> keys,
+        public AccountById(IIdentityService identityService)
+        {
+            _identityService = identityService;
+        }
+
+        protected override Task<IReadOnlyDictionary<long, ApplicationUser>> LoadBatchAsync(IReadOnlyList<long> keys,
             CancellationToken cancellationToken)
         {
-            return await applicationDbContext.Users
-                .AsNoTracking()
-                .Where(x => keys.Contains(x.Id))
-                .ToDictionaryAsync(x => x.Id, cancellationToken);
+            return _identityService.GetUserFromBatch(keys, cancellationToken);
         }
     }
 }

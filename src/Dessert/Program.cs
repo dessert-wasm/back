@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using Dessert.Persistence;
+﻿using System.IO;
 using Dessert.Utilities.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.CommandLineUtils;
@@ -57,67 +55,8 @@ namespace Dessert
 
             var logger = host.Services.CreateScope().ServiceProvider.GetRequiredService<ILogger<Program>>();
 
-            app.Command("migrate",
-                c =>
-                {
-                    c.Description = "Create and initialize the database";
-
-                    var withFakeData = c.Option("-f |--with-fake", "add fake data", CommandOptionType.NoValue);
-
-                    c.OnExecute(() =>
-                    {
-                        var withOrWithout = withFakeData.HasValue() ? string.Empty : "out";
-                        logger.LogInformation($"Migrating data, with{withOrWithout} fake");
-
-                        using (var serviceScope = host.Services.CreateScope())
-                        {
-                            DbFakesOptions dbFakesOptions = null;
-                            if (withFakeData.HasValue())
-                            {
-                                var rng = new Random();
-                                dbFakesOptions = new DbFakesOptions()
-                                {
-                                    ModuleCount = () => 5000,
-                                    ReplacementsCount = () => rng.Next(50, 100),
-                                    ReplacementPerModule = () => rng.Next(0, 3),
-                                    TagPerModule = () => rng.Next(2, 6),
-                                };
-                            }
-
-                            var seeder = new DbSeeder(serviceScope.ServiceProvider,
-                                new DbSeederOptions()
-                                {
-                                    FakesOptions = dbFakesOptions,
-                                });
-                            try
-                            {
-                                seeder.Seed().Wait();
-                                logger.LogInformation("Migration finished");
-                            }
-                            catch (Exception e)
-                            {
-                                logger.LogError(e, "Fatal error while migrating or seeding the database");
-                                return 1;
-                            }
-                        }
-
-                        return 0;
-                    });
-                });
-
-            app.Command("start",
-                c =>
-                {
-                    c.Description = "Start the application";
-
-                    c.OnExecute(() =>
-                    {
-                        logger.LogInformation($"Start the application");
-                        host.Run();
-                        return 0;
-                    });
-                });
-            app.Execute(args);
+            logger.LogInformation($"Start the application");
+            host.Run();
         }
     }
 }

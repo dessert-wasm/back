@@ -11,7 +11,7 @@ namespace Dessert.GraphQL
             descriptor.BindFieldsExplicitly();
 
             descriptor
-                .Field(t => t.Login(default, default, default, default, default))
+                .Field(t => t.Login(default, default, default, default))
                 .Name("login")
                 .Description("cookie login")
                 .Argument("email", arg => arg.Type<NonNullType<StringType>>())
@@ -20,7 +20,7 @@ namespace Dessert.GraphQL
                 .Type<NonNullType<AccountType>>();
 
             descriptor
-                .Field(t => t.Register(default, default, default, default, default, default))
+                .Field(t => t.Register(default, default, default, default))
                 .Description("cookie register")
                 .Name("register")
                 .Argument("email", arg => arg.Type<NonNullType<StringType>>())
@@ -36,13 +36,13 @@ namespace Dessert.GraphQL
                 .Type<NonNullType<BooleanType>>();
 
             descriptor
-                .Field(t => t.DeleteCurrentUser(default, default, default))
+                .Field(t => t.DeleteCurrentUser(default))
                 .Name("deleteUser")
                 .Description("Delete the current user")
                 .Type<NonNullType<BooleanType>>();
 
             descriptor
-                .Field(t => t.CreateToken(default, default, default, default))
+                .Field(t => t.CreateToken(default, default))
                 .Authorize()
                 .Name("createToken")
                 .Description("Create a new token and return it's value")
@@ -51,7 +51,7 @@ namespace Dessert.GraphQL
                 .Argument("description", x => x.Type<NonNullType<StringType>>());
 
             descriptor
-                .Field(t => t.DeleteToken(default, default, default))
+                .Field(t => t.DeleteToken(default, default))
                 .Name("deleteToken")
                 .Description("Delete a token")
                 .Type<NonNullType<BooleanType>>()
@@ -70,7 +70,7 @@ namespace Dessert.GraphQL
                 .Argument("isCore", x => x.Type<NonNullType<BooleanType>>());
 
             descriptor
-                .Field(t => t.DeleteModule(default, default, default, default))
+                .Field(t => t.DeleteModule(default, default, default))
                 .Name("deleteModule")
                 .Description("Delete a module")
                 .Type<NonNullType<BooleanType>>()

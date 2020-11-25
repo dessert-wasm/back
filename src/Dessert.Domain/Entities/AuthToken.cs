@@ -9,6 +9,6 @@ namespace Dessert.Domain.Entities
         public string Description { get; set; }
         public long AccountId { get; set; }
 
-        public Account Account { get; set; }
+        public ApplicationUser Account { get; set; }
     }
 }

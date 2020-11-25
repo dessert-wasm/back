@@ -16,7 +16,7 @@ namespace Dessert.GraphQL
             descriptor.Description("Main entry point to retrieve data");
 
             descriptor
-                .Field(t => t.Me(default, default))
+                .Field(t => t.Me(default))
                 .Authorize()
                 .Name("me")
                 .Description("Get the current logged in user")
@@ -31,24 +31,24 @@ namespace Dessert.GraphQL
                 .Type<NonNullType<PaginatedResultType<Module>>>();
 
             descriptor
-                .Field(t => t.Module(default, default, default))
+                .Field(t => t.Module(default, default))
                 .Name("module")
                 .Type<NonNullType<ModuleType>>()
                 .Argument("id", x => x.Type<NonNullType<IntType>>());
 
             descriptor
-                .Field(t => t.User(default, default, default))
+                .Field(t => t.User(default, default))
                 .Name("user")
                 .Type<NonNullType<AccountType>>()
                 .Argument("id", x => x.Type<NonNullType<IntType>>());
 
             descriptor
-                .Field(t => t.Tags(default, default))
+                .Field(t => t.Tags(default))
                 .Name("tags")
                 .Type<NonNullType<ListType<NonNullType<ModuleTagType>>>>();
 
             descriptor
-                .Field(t => t.Recommend(default, default, default))
+                .Field(t => t.Recommend(default, default))
                 .Name("recommend")
                 .Argument("dependencies",
                     a => a.Type<NonNullType<ListType<NonNullType<JSDependencyType>>>>())

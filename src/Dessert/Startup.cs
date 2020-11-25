@@ -2,28 +2,27 @@
 using System.Net;
 using System.Threading.Tasks;
 using AspNet.Security.OAuth.GitHub;
+using Dessert.Application;
+using Dessert.Application.Interfaces;
 using Dessert.Authorization;
-using Dessert.Domain.Entities.Identity;
 using Dessert.GraphQL;
-using Dessert.Persistence;
+using Dessert.Infrastructure;
+using Dessert.Services;
 using HotChocolate;
 using HotChocolate.AspNetCore;
 using HotChocolate.AspNetCore.Voyager;
 using HotChocolate.Configuration;
 using HotChocolate.Execution.Configuration;
 using HotChocolate.Types;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 
 namespace Dessert
 {
@@ -41,31 +40,15 @@ namespace Dessert
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                {
-                    var dbSettings = _configuration.GetSection("Database").Get<DatabaseSettings>();
-                    if (dbSettings == null)
-                        throw new Exception("No Database configuration found");
-
-                    options.UseNpgsql(dbSettings.GetConnectionString(),
-                        opt =>
-                        {
-                            opt.UseTrigrams();
-                        });
-                    options.EnableSensitiveDataLogging();
-                },
-                ServiceLifetime.Transient);
-
+            services.AddApplication();
+            services.AddInfrastructure(_configuration);
+            
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
+            
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(PolicyConstants.RequireAdministrator, Policies.RequireAdministrator);
             });
-
-            services.AddIdentityCore<Account>()
-                .AddRoles<AccountRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders()
-                .AddSignInManager();
 
             services.AddHttpContextAccessor();
 

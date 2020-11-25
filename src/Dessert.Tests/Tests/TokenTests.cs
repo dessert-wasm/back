@@ -47,7 +47,7 @@ namespace Dessert.Tests.Tests
                     password = "pass"
                 }
             });
-            var account = response.GetDataFieldAs<Account>("login");
+            var account = response.GetDataFieldAs<ApplicationUser>("login");
 
             Assertions.Equal("Eleanor", account.UserName);
             Assertions.Empty(response.Data);//["login"]["tokens"]);
@@ -91,7 +91,7 @@ namespace Dessert.Tests.Tests
                 }
                 ",
                 });
-                account = response.GetDataFieldAs<Account>("me");
+                account = response.GetDataFieldAs<ApplicationUser>("me");
                 var receivedTokens = new List<AuthToken>();
 
                 Assertions.Equal("Eleanor", account.UserName);

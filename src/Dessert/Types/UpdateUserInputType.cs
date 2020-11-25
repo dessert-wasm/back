@@ -4,9 +4,9 @@ using HotChocolate.Types;
 namespace Dessert.Types
 {
     public class UpdateUserInputType
-        : InputObjectType<Account>
+        : InputObjectType<ApplicationUser>
     {
-        protected override void Configure(IInputObjectTypeDescriptor<Account> descriptor)
+        protected override void Configure(IInputObjectTypeDescriptor<ApplicationUser> descriptor)
         {
             descriptor.BindFieldsExplicitly();
 

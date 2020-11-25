@@ -8,17 +8,13 @@
     <ItemGroup>
         <PackageReference Include="AspNet.Security.OAuth.GitHub" Version="3.1.3" />
         <PackageReference Include="Bogus" Version="29.0.1" />
-        <PackageReference Include="HotChocolate.AspNetCore" Version="10.3.6" />
-        <PackageReference Include="HotChocolate.AspNetCore.GraphiQL" Version="10.3.6" />
-        <PackageReference Include="HotChocolate.AspNetCore.Playground" Version="10.3.6" />
-        <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="10.3.6" />
-        <PackageReference Include="HotChocolate.AspNetCore.Voyager" Version="10.3.6" />
+        <PackageReference Include="HotChocolate.AspNetCore" Version="10.5.5" />
+        <PackageReference Include="HotChocolate.AspNetCore.GraphiQL" Version="10.5.5" />
+        <PackageReference Include="HotChocolate.AspNetCore.Playground" Version="10.5.5" />
+        <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="10.5.5" />
+        <PackageReference Include="HotChocolate.AspNetCore.Voyager" Version="10.5.5" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.2" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.2" />
         <PackageReference Include="Microsoft.Extensions.CommandLineUtils" Version="1.1.1" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.4" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Trigrams" Version="3.1.4" />
         <PackageReference Include="YamlDotNet" Version="8.1.0" />
     </ItemGroup>
 
@@ -32,7 +28,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Dessert.Application\Dessert.Application.csproj" />
       <ProjectReference Include="..\Dessert.Domain\Dessert.Domain.csproj" />
+      <ProjectReference Include="..\Dessert.Infrastructure\Dessert.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>

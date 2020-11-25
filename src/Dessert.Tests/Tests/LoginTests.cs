@@ -37,7 +37,7 @@ namespace Dessert.Tests.Tests
                 }
             });
 
-            var account = response.GetDataFieldAs<Account>("login");
+            var account = response.GetDataFieldAs<ApplicationUser>("login");
 
             Assertions.Equal(2, account.Id);
             Assertions.Equal("Eleanor", account.UserName);
@@ -56,7 +56,7 @@ namespace Dessert.Tests.Tests
                 "
             });
 
-            account = response.GetDataFieldAs<Account>("me");
+            account = response.GetDataFieldAs<ApplicationUser>("me");
 
             Assertions.Equal(2, account.Id);
             Assertions.Equal("Eleanor", account.UserName);
@@ -116,7 +116,7 @@ namespace Dessert.Tests.Tests
                 }
             });
             
-            var account = response.GetDataFieldAs<Account>("register");
+            var account = response.GetDataFieldAs<ApplicationUser>("register");
 
             Assertions.Equal(username, account.UserName);
             
@@ -150,7 +150,7 @@ namespace Dessert.Tests.Tests
                 }
             });
 
-            account = response.GetDataFieldAs<Account>("login");
+            account = response.GetDataFieldAs<ApplicationUser>("login");
 
             Assertions.Equal(username, account.UserName);
 
@@ -166,7 +166,7 @@ namespace Dessert.Tests.Tests
                 "
             });
 
-            account = response.GetDataFieldAs<Account>("me");
+            account = response.GetDataFieldAs<ApplicationUser>("me");
 
             Assertions.Equal(username, account.UserName);
 

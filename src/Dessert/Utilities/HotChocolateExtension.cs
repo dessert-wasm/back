@@ -1,7 +1,7 @@
 using System;
 using System.Security.Claims;
+using Dessert.Domain.Pagination;
 using Dessert.Types.Pagination;
-using Dessert.Utilities.Pagination;
 using HotChocolate.Resolvers;
 using HotChocolate.Types;
 

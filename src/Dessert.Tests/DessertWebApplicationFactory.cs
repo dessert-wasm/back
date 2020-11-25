@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dessert.Domain.Entities;
-using Dessert.Persistence;
 using GraphQL.Client.Http;
 using GraphQL.Common.Request;
 using GraphQL.Common.Response;
@@ -74,6 +73,7 @@ namespace Dessert.Tests
             try
             {
                 throw new Exception("bitch");
+                /*
                 using (var serviceScope = server.Host.Services.CreateScope())
                 {
                     var rng = new Random();
@@ -90,6 +90,7 @@ namespace Dessert.Tests
                         });
                     seeder.Seed().Wait();
                 }
+                */
             }
             catch (Exception ex)
             {

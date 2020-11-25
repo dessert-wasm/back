@@ -2,29 +2,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Dessert.Application.Repositories;
 using Dessert.Domain.Entities;
-using Dessert.Persistence;
-using Microsoft.EntityFrameworkCore;
+using HotChocolate.DataLoader;
 
 namespace Dessert.DataLoaders
 {
-    public static class ModuleTagsByModuleId
+    public class ModuleTagsByModuleId : GroupedDataLoader<long, ModuleTag>
     {
-        public const string Name = nameof(ModuleTagsByModuleId);
+        private readonly ITagRepository _tagRepository;
 
-        public static async Task<ILookup<long, ModuleTag>> GetModuleTagsByModuleId(
-            this ApplicationDbContext applicationDbContext,
-            IReadOnlyList<long> keys,
-            CancellationToken cancellationToken)
+        public ModuleTagsByModuleId(ITagRepository tagRepository)
         {
-            var moduleTags = await applicationDbContext.ModuleModuleTagRelations
-                .AsNoTracking()
-                .Where(x => keys.Contains(x.ModuleId))
-                .Include(x => x.ModuleTag)
-                .ToListAsync(cancellationToken);
+            _tagRepository = tagRepository;
+        }
 
-            return moduleTags
-                .ToLookup(x => x.ModuleId, x => x.ModuleTag);
+        protected override Task<ILookup<long, ModuleTag>> LoadGroupedBatchAsync(IReadOnlyList<long> keys, CancellationToken cancellationToken)
+        {
+            return _tagRepository.GetTagsBatch(keys, cancellationToken);
         }
     }
 }

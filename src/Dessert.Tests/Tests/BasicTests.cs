@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dessert.Domain.Entities;
 using Dessert.Domain.Entities.Identity;
-using Dessert.Utilities.Pagination;
+using Dessert.Domain.Pagination;
 using GraphQL.Common.Request;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -65,7 +65,7 @@ namespace Dessert.Tests.Tests
                 ",
             });
 
-            var account = response.GetDataFieldAs<Account>("user");
+            var account = response.GetDataFieldAs<ApplicationUser>("user");
 
             Assertions.Equal(2, account.Id);
             Assertions.Equal("Eleanor", account.UserName);
@@ -115,8 +115,8 @@ namespace Dessert.Tests.Tests
             Assertions.Equal(1, module.Id);
             Assertions.Equal("dessert-yaml-js", module.Name);
             Assertions.Equal("WASM connector corresponding to the yaml-js library", module.Description);
-            Assertions.Equal(new Account(), module.Author);
-            Assertions.Equal(new Account(), module.Author);
+            Assertions.Equal(new ApplicationUser(), module.Author);
+            Assertions.Equal(new ApplicationUser(), module.Author);
             // Assertions.Equal("Tahani", module.Author.FirstName);
             // Assertions.Equal("Al-Jamil", module.Author.LastName);
         }

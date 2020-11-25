@@ -37,7 +37,7 @@ namespace Dessert.Tests.Tests
             });
             
 
-            var account = login_response.GetDataFieldAs<Account>("login");
+            var account = login_response.GetDataFieldAs<ApplicationUser>("login");
            //  Assertions.Equal("Eleanor", account.FirstName);
            //  Assertions.Equal("Shellstrop", account.LastName);
             
@@ -64,7 +64,7 @@ namespace Dessert.Tests.Tests
             Assertions.Null(response.Errors);
             Assertions.NotNull(response.Data);
             
-            var updatedAccount = response.GetDataFieldAs<Account>("updateUser");
+            var updatedAccount = response.GetDataFieldAs<ApplicationUser>("updateUser");
             
             Assertions.Equal("Eleaanor", updatedAccount.Nickname);
              Assertions.Equal("Oui", updatedAccount.Email);
@@ -81,7 +81,7 @@ namespace Dessert.Tests.Tests
                 }
                 "
             });
-            var me = me_response.GetDataFieldAs<Account>("me");
+            var me = me_response.GetDataFieldAs<ApplicationUser>("me");
             
             Assertions.Null(me_response.Errors);
             Assertions.NotNull(me_response.Data);

@@ -1,98 +1,72 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Dessert.DataLoaders;
+using Dessert.Application.Handlers.Account.Queries.GetAccount;
+using Dessert.Application.Handlers.Account.Queries.GetMyAccount;
+using Dessert.Application.Handlers.Module.Queries.GetModule;
+using Dessert.Application.Handlers.Module.Queries.GetTags;
+using Dessert.Application.Handlers.Module.Queries.Recommend;
+using Dessert.Application.Handlers.Module.Queries.SearchModules;
 using Dessert.Domain.Entities;
 using Dessert.Domain.Entities.Identity;
 using Dessert.Domain.Enums;
-using Dessert.Persistence;
-using Dessert.Types.Arguments;
+using Dessert.Domain.Pagination;
 using Dessert.Utilities;
-using Dessert.Utilities.Pagination;
 using HotChocolate;
-using GreenDonut;
 using HotChocolate.Resolvers;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using MediatR;
 
 namespace Dessert.GraphQL
 {
     public class Query
     {
-        public async Task<Account> Me(IResolverContext context, [Service] SignInManager<Account> signInManager)
+        public Task<IUser> Me([Service] IMediator mediator)
         {
-            var email = signInManager.Context.User.GetEmail();
-            var acc = await signInManager.UserManager.FindByEmailAsync(email);
-            return acc;
-            //return await signInManager.UserManager.GetUserAsync(signInManager.Context.User);
+            return mediator.Send(new GetMyAccountQuery());
         }
 
-        public async Task<Module> Module(IResolverContext context,
-            long id,
-            [Service] ApplicationDbContext applicationDbContext)
+        public Task<Module> Module(long id, [Service] IMediator mediator)
         {
-            return await context.BatchDataLoader<long, Module>(ModuleById.Name, applicationDbContext.GetModuleById)
-                .LoadAsync(id);
+            return mediator.Send(new GetModuleQuery
+            {
+                ModuleId = id,
+            });
         }
 
-        public async Task<Account> User(IResolverContext context,
-            long id,
-            [Service] ApplicationDbContext applicationDbContext)
+        public Task<IUser> User(long id, [Service] IMediator mediator)
         {
-            return await applicationDbContext.Users
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+            return mediator.Send(new GetAccountQuery
+            {
+                UserId = id,
+            });
         }
 
-        public async Task<List<ModuleTag>> Tags(IResolverContext context,
-            [Service] ApplicationDbContext applicationDbContext)
+        public Task<IReadOnlyCollection<ModuleTag>> Tags([Service] IMediator mediator)
         {
-            return await applicationDbContext.ModuleTags
-                .AsNoTracking()
-                .ToListAsync();
+            return mediator.Send(new GetTagsQuery());
         }
 
-        public async Task<PaginatedResult<Module>> Search(IResolverContext context,
+        public Task<PaginatedResult<Module>> Search([Service] IResolverContext context,
             string query,
             ModuleTypeEnum? type,
-            [Service] ApplicationDbContext applicationDbContext)
+            [Service] IMediator mediator)
         {
             var paginationQuery = context.GetPaginationQuery();
-            query = $"%{query}%";
-            var sqlQuery = applicationDbContext.Modules
-                .AsNoTracking()
-                .Where(x =>
-                    EF.Functions.Like(x.Name, query) ||
-                    EF.Functions.Like(x.Description, query) ||
-                    EF.Functions.Like(x.GithubLink, query) ||
-                    EF.Functions.Like(x.Author.Nickname, query) ||
-                    applicationDbContext.ModuleModuleReplacementRelations
-                        .Any(t => t.ModuleId == x.Id && (EF.Functions.Like(t.ModuleReplacement.Name, query) || EF.Functions.Like(t.ModuleReplacement.Link, query))) ||
-                    applicationDbContext.ModuleModuleTagRelations
-                        .Any(t => t.ModuleId == x.Id && EF.Functions.Like(t.ModuleTag.Name, query)));
-            if (type.HasValue)
+
+            return mediator.Send(new SearchModulesQuery
             {
-                sqlQuery = sqlQuery
-                    .Where(x => x.IsCore == (type.Value == ModuleTypeEnum.Core));
-            }
-            var orderedQuery = sqlQuery.OrderByDescending(x => x.LastUpdatedDateTime);
-            return await Paginator.GetPaginatedResult(paginationQuery, orderedQuery);
+                Query = query,
+                Type = type,
+                PaginationQuery = paginationQuery,
+            });
         }
 
-        public async Task<IReadOnlyCollection<Module>> Recommend(IResolverContext context,
-            IReadOnlyCollection<JSDependency> dependencies,
-            [Service] ApplicationDbContext applicationDbContext)
+        public Task<IReadOnlyCollection<Module>> Recommend(IReadOnlyCollection<JSDependency> dependencies,
+            [Service] IMediator mediator)
         {
-            var dependencyNames = dependencies.Select(x => x.Name);
-
-            var replacements = await applicationDbContext.ModuleModuleReplacementRelations
-                .Where(x => dependencyNames.Contains(x.ModuleReplacement.Name))
-                .Select(x => x.Module)
-                .Distinct()
-                .ToArrayAsync();
-            return replacements;
+            return mediator.Send(new RecommendQuery
+            {
+                Dependencies = dependencies,
+            });
         }
     }
 }

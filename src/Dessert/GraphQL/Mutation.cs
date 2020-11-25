@@ -1,236 +1,118 @@
-using System;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
+using Dessert.Application.Handlers.Account.Commands.DeleteMyAccount;
+using Dessert.Application.Handlers.Account.Commands.Login;
+using Dessert.Application.Handlers.Account.Commands.Logout;
+using Dessert.Application.Handlers.Account.Commands.Register;
+using Dessert.Application.Handlers.Account.Commands.UpdateMyAccount;
+using Dessert.Application.Handlers.Module.Commands.CreateModule;
+using Dessert.Application.Handlers.Module.Commands.DeleteModule;
+using Dessert.Application.Handlers.Token.Commands.CreateToken;
+using Dessert.Application.Handlers.Token.Commands.DeleteToken;
 using Dessert.Domain.Entities;
 using Dessert.Domain.Entities.Identity;
-using Dessert.Persistence;
-using Dessert.Utilities;
 using HotChocolate;
 using HotChocolate.Resolvers;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using MediatR;
 
 namespace Dessert.GraphQL
 {
     public class Mutation
     {
-        private readonly ILogger<Mutation> _logger;
-
-        public Mutation(ILogger<Mutation> logger)
+        public Task<IUser> Login(string email, string password, bool remember, [Service] IMediator mediator)
         {
-            _logger = logger;
-        }
-
-        public async Task<Account> Login(
-            string email,
-            string password,
-            bool remember,
-            [Service] IHttpContextAccessor contextAccessor,
-            [Service] SignInManager<Account> signInManager)
-        {
-            var account = await signInManager.UserManager.FindByEmailAsync(email);
-
-            if (account == null)
-                throw new Exception("invalid credentials");
-
-            var passwordResult = await signInManager.CheckPasswordSignInAsync(account, password, false);
-            if (!passwordResult.Succeeded)
-                throw new Exception("invalid password");
-
-            var userPrincipal = await signInManager.CreateUserPrincipalAsync(account);
-            await contextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                userPrincipal,
-                new AuthenticationProperties
-                {
-                    IsPersistent = remember,
-                });
-            return account;
-        }
-
-        public async Task<Account> Register(
-            IResolverContext context,
-            string email,
-            string nickname,
-            string password,
-            [Service] UserManager<Account> userManager,
-            [Service] SignInManager<Account> signInManager)
-        {
-            if (signInManager.IsSignedIn(context.GetClaimsPrincipal()))
-                throw new Exception("Already connected");
-
-            var account = new Account()
+            return mediator.Send(new LoginCommand
             {
-                UserName = email,
+                Email = email,
+                Password = password,
+                RememberMe = remember,
+            });
+        }
+
+        public Task<IUser> Register(string email, string nickname, string password, [Service] IMediator mediator)
+        {
+            return mediator.Send(new RegisterCommand
+            {
                 Email = email,
                 Nickname = nickname,
-                ProfilePicUrl = "https://i.imgur.com/JrLLeco.jpg"
-            };
-            
-            var result = await userManager.CreateAsync(account, password);
-            if (!result.Succeeded)
-            {
-                var errors = string.Join(", ", result.Errors.Select(x => x.Description));
-                throw new Exception($"cannot create user, {errors}");
-            }
-
-            return account;
+                Password = password,
+            });
         }
 
-        public async Task<bool> Logout([Service] SignInManager<Account> signInManager)
+        public async Task<bool> Logout([Service] IMediator mediator)
         {
-            await signInManager.Context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return true;
-        }
-        
-        public async Task<bool> DeleteCurrentUser(IResolverContext context,
-            [Service] ApplicationDbContext applicationDbContext,
-            [Service] SignInManager<Account> signInManager)
-        {
-            // var account = await signInManager.UserManager.GetUserAsync(context.GetClaimsPrincipal());
-
-            // applicationDbContext.Users.Remove(account);
-            // await applicationDbContext.SaveChangesAsync();
+            await mediator.Send(new LogoutCommand());
 
             return true;
         }
 
-        public async Task<string> CreateToken(IResolverContext context,
-            [Service] UserManager<Account> userManager,
-            [Service] ApplicationDbContext applicationDbContext,
-            string description)
+        public async Task<bool> DeleteCurrentUser([Service] IMediator mediator)
         {
-            var email = context.GetClaimsPrincipal().GetEmail();
-            var account = await userManager.FindByEmailAsync(email);
-            
-            var token = new AuthToken()
+            await mediator.Send(new DeleteMyAccountCommand());
+
+            return true;
+        }
+
+        public Task<string> CreateToken([Service] IMediator mediator, string description)
+        {
+            return mediator.Send(new CreateTokenCommand
             {
                 Description = description,
-                AccountId = account.Id,
-                Token = Guid.NewGuid().ToString(),
-            };
-
-            applicationDbContext.AuthTokens.Add(token);
-            await applicationDbContext.SaveChangesAsync();
-
-            return token.Token;
+            });
         }
 
-        public async Task<bool> DeleteToken(IResolverContext context,
-            [Service] ApplicationDbContext applicationDbContext,
-            string token)
+        public async Task<bool> DeleteToken([Service] IMediator mediator, string token)
         {
-            AuthToken authToken = null;
-
-            if (token != null)
-                authToken = await applicationDbContext.AuthTokens.FirstOrDefaultAsync(x => x.Token == token);
-
-            if (authToken == null)
-                return false;
-
-            applicationDbContext.AuthTokens.Remove(authToken);
-            await applicationDbContext.SaveChangesAsync();
+            await mediator.Send(new DeleteTokenCommand
+            {
+                Token = token,
+            });
 
             return true;
         }
 
-        public async Task<Module> CreateModule(IResolverContext context,
-            [Service] ApplicationDbContext applicationDbContext,
+        public Task<Module> CreateModule([Service] IResolverContext context,
+            [Service] IMediator mediator,
             string token,
             string name,
             string description,
             string githubLink,
             bool isCore)
         {
-            var account = await GetAccountFromToken(applicationDbContext, token);
             var replacements = context.Argument<IEnumerable<ModuleReplacement>>("replacements");
 
-            var module = new Module()
+            return mediator.Send(new CreateModule
             {
-                Name = name,
                 Description = description,
-                IsCore = isCore,
-                PublishedDateTime = DateTime.Now,
-                LastUpdatedDateTime = DateTime.Now,
-                Author = account,
+                Name = name,
+                Replacements = replacements.ToArray(),
+                Token = token,
                 GithubLink = githubLink,
-            };
-            applicationDbContext.Modules.Add(module);
-
-            foreach (var r in replacements)
-            {
-                var replacement = new ModuleReplacement()
-                {
-                    Link = r.Link,
-                    Name = r.Name,
-                };
-                applicationDbContext.ModuleReplacements.Add(replacement);
-                
-                var moduleModuleReplacementRelation = new ModuleModuleReplacementRelation()
-                {
-                    Module = module,
-                    ModuleReplacement = replacement,
-                };
-                applicationDbContext.ModuleModuleReplacementRelations.Add(moduleModuleReplacementRelation);
-            }
-
-            await applicationDbContext.SaveChangesAsync();
-
-            return module;
+                IsCore = isCore
+            });
         }
 
-        public async Task<bool> DeleteModule(IResolverContext context, [Service] ApplicationDbContext applicationDbContext, string token, long id)
+        public async Task<bool> DeleteModule([Service] IMediator mediator, string token, long id)
         {
-            var account = await GetAccountFromToken(applicationDbContext, token);
-
-            var module = await applicationDbContext.Modules.FirstOrDefaultAsync(x => x.Id == id);
-
-            //todo custom error depending on the reason why it failed ?
-            if (module == null)
-                return false;
-            if (module.Author != account)
-                return false;
-
-            applicationDbContext.Modules.Remove(module);
-            await applicationDbContext.SaveChangesAsync();
+            await mediator.Send(new DeleteModuleCommand
+            {
+                Token = token,
+                ModuleId = id,
+            });
 
             return true;
         }
 
-        public async Task<Account> UpdateUser(IResolverContext context,
-            [Service] UserManager<Account> userManager)
+        public Task<IUser> UpdateUser([Service] IResolverContext context, [Service] IMediator mediator)
         {
-            var input = context.Argument<Account>("account");
-            var email = context.GetClaimsPrincipal().GetEmail();
-            var account = await userManager.FindByEmailAsync(email);
+            var input = context.Argument<ApplicationUser>("account");
 
-            account.Nickname = input.Nickname;
-            account.ProfilePicUrl = input.ProfilePicUrl;
-
-            var result = await userManager.UpdateAsync(account);
-            if (!result.Succeeded)
-                throw new Exception("Failed to update account");
-
-            return account;
-        }
-
-        private static async Task<Account> GetAccountFromToken(ApplicationDbContext applicationDbContext, string token)
-        {
-            var authToken = await applicationDbContext.AuthTokens
-                .Include(x => x.Account)
-                .FirstOrDefaultAsync(x => x.Token == token);
-
-            if (authToken == null)
-                throw new Exception("invalid token");
-
-            return authToken.Account;
+            return mediator.Send(new UpdateMyAccountCommand()
+            {
+                Nickname = input.Nickname,
+                ProfilePicUrl = input.ProfilePicUrl,
+            });
         }
     }
 }

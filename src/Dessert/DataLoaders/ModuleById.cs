@@ -1,26 +1,24 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Dessert.Application.Repositories;
 using Dessert.Domain.Entities;
-using Dessert.Persistence;
-using Microsoft.EntityFrameworkCore;
+using HotChocolate.DataLoader;
 
 namespace Dessert.DataLoaders
 {
-    public static class ModuleById
+    public class ModuleById : BatchDataLoader<long, Module>
     {
-        public const string Name = nameof(ModuleById);
+        private readonly IModuleRepository _moduleRepository;
 
-        public static async Task<IReadOnlyDictionary<long, Module>> GetModuleById(
-            this ApplicationDbContext applicationDbContext,
-            IReadOnlyList<long> keys,
-            CancellationToken cancellationToken)
+        public ModuleById(IModuleRepository moduleRepository)
         {
-            return await applicationDbContext.Modules
-                .AsNoTracking()
-                .Where(x => keys.Contains(x.Id))
-                .ToDictionaryAsync(x => x.Id, cancellationToken);
+            _moduleRepository = moduleRepository;
+        }
+
+        protected override Task<IReadOnlyDictionary<long, Module>> LoadBatchAsync(IReadOnlyList<long> keys, CancellationToken cancellationToken)
+        {
+            return _moduleRepository.GetModuleBatch(keys, cancellationToken);
         }
     }
 }

@@ -5,8 +5,8 @@ AllowedOrigins:
 
 Database:
   User: "postgres"
-  Password: "vide"
-  Database: "postgres"
+  Password: "empty"
+  Database: "back"
   Host: "localhost"
   Port: 5432
 
