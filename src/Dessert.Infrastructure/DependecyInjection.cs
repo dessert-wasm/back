@@ -15,9 +15,10 @@ namespace Dessert.Infrastructure
 {
     public static class DependecyInjection
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInfrastructureDb(this IServiceCollection services,
+            IConfiguration configuration)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
+            return services.AddDbContext<ApplicationDbContext>(options =>
                 {
                     var dbSettings = configuration.GetSection("Database").Get<DatabaseSettings>();
                     if (dbSettings == null)
@@ -27,7 +28,10 @@ namespace Dessert.Infrastructure
                     options.EnableSensitiveDataLogging();
                 },
                 ServiceLifetime.Transient);
-
+        }
+        
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+        {
             services.AddScoped<IIdentityService, IdentityService>();
             
             services.AddScoped<IModuleRepository, ModuleRepository>();

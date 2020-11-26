@@ -10,6 +10,8 @@ namespace Dessert.Types
         {
             descriptor.BindFieldsExplicitly();
 
+            descriptor.Name("AccountInput");
+
             descriptor.Field(t => t.Nickname)
                 .Type<NonNullType<StringType>>();
 

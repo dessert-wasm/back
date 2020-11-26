@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Bogus;
 using Dessert.Domain.Entities;
 using Dessert.Domain.Entities.Identity;
+using Dessert.Infrastructure.Persistence;
+using Dessert.Persistence;
 using GraphQL.Common.Request;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
@@ -27,21 +29,21 @@ namespace Dessert.Tests.Tests
             var faker = new Faker();
 
             //remove all of tahanie's modules
-            // using (var serviceScope = _factory.Server.Host.Services.CreateScope())
-            // {
-            //     var db = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            using (var serviceScope = _factory.Server.Host.Services.CreateScope())
+            {
+                var db = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            //     db.RemoveRange(db.Modules.Where(x => x.AuthorId == 2));
-            //     await db.SaveChangesAsync();
-            // }
+                db.RemoveRange(db.Modules.Where(x => x.AuthorId == 2));
+                await db.SaveChangesAsync();
+            }
 
             var response = await client.SendMutationAsync(new GraphQLRequest
             {
                 Query = @"
                 mutation($username: String!, $password: String!, $pagination: PaginationQueryInput!) {
-                  login(username: $username, password: $password, remember: true) {
+                  login(email: $username, password: $password, remember: true) {
                     id
-                    userName
+                    nickname
                     tokens {
                       id
                       description
@@ -55,7 +57,7 @@ namespace Dessert.Tests.Tests
                 ",
                 Variables = new
                 {
-                    username = "Eleanor",
+                    username = "eleanor.s@gmail.co",
                     password = "pass",
                     pagination = new {
                         pageNumber = 1,
@@ -66,9 +68,9 @@ namespace Dessert.Tests.Tests
             });
             var account = response.GetDataFieldAs<ApplicationUser>("login");
 
-            Assertions.Equal("Eleanor", account.UserName);
-            Assertions.Empty(response.Data);//["login"]["tokens"]);
-            Assertions.Empty(response.Data);//["login"]["modules"]["result"]);
+            Assert.Equal("Eleanor", account.Nickname);
+            Assert.Empty(response.Data["login"]["tokens"]);
+            Assert.Empty(response.Data["login"]["modules"]["result"]);
 
             response = await client.SendMutationAsync(new GraphQLRequest
             {
@@ -82,7 +84,7 @@ namespace Dessert.Tests.Tests
                     description = faker.Lorem.Paragraph()
                 }
             });
-            var token = "createToken";
+            var token = response.GetDataFieldAs<string>("createToken");
 
             async Task<Module> CreateModule()
             {
@@ -127,18 +129,18 @@ namespace Dessert.Tests.Tests
                     {
                         name = name,
                         description = description,
-                        replacements = new [] { new {name="oui", link="oui.js"}},
+                        replacements = new [] { new {name="oui", link="http://oui.com"}},
                         isCore = isCore,
                         token = token,
                     }
                 });
                 var module = response.GetDataFieldAs<Module>("createModule");
 
-                Assertions.Equal(name, module.Name);
-                Assertions.Equal(description, module.Description);
-                Assertions.Equal(isCore, module.IsCore);
-                Assertions.NotEmpty(response.Data);//["createModule"]["replacements"]);
-                Assertions.Empty(response.Data);//["createModule"]["tags"]);
+                Assert.Equal(name, module.Name);
+                Assert.Equal(description, module.Description);
+                Assert.Equal(isCore, module.IsCore);
+                Assert.NotEmpty(response.Data["createModule"]["replacements"]);
+                Assert.Empty(response.Data["createModule"]["tags"]);
 
                 return module;
             }
@@ -160,7 +162,7 @@ namespace Dessert.Tests.Tests
                 });
                 var success = response.GetDataFieldAs<bool>("deleteModule");
 
-                Assertions.True(success);
+                Assert.True(success);
             }
 
             async Task AssertUserHasSameModules(List<Module> modulesToCheck)
@@ -171,7 +173,7 @@ namespace Dessert.Tests.Tests
                 {
                   me {
                     id
-                    userName
+                    nickname
                     modules(pagination: {pageNumber: 1, pageSize: 50, includeCount: false}) {
                       result { id }
                     }
@@ -181,12 +183,12 @@ namespace Dessert.Tests.Tests
                 });
                 // TODO: This now only checks for the first page of modules with a pageSize of 50
                 account = response.GetDataFieldAs<ApplicationUser>("me");
-                //var receivedModules = (response.Data["me"]["modules"]["result"] as JArray)?.ToObject<List<Module>>();
-                Assertions.Equal(modulesToCheck.Count, 2);
-                // foreach (var receivedModule in receivedModules)
-                // {
-                //     Assertions.Contains(modulesToCheck, x => x.Id == receivedModule.Id);
-                // }
+                var receivedModules = (response.Data["me"]["modules"]["result"] as JArray)?.ToObject<List<Module>>();
+                Assert.Equal(modulesToCheck.Count, receivedModules.Count);
+                foreach (var receivedModule in receivedModules)
+                {
+                    Assert.Contains(modulesToCheck, x => x.Id == receivedModule.Id);
+                }
             }
 
             var modules = new List<Module>();

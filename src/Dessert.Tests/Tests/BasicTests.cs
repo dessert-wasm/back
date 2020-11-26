@@ -34,10 +34,9 @@ namespace Dessert.Tests.Tests
                 ",
             });
 
+            Assert.Null(response.Errors);
             var tags = response.GetDataFieldAs<List<ModuleTag>>("tags");
-
-            Assertions.Null(response.Errors);
-            Assertions.NotEmpty(tags);
+            Assert.NotEmpty(tags);
         }
 
         [Fact]
@@ -50,9 +49,8 @@ namespace Dessert.Tests.Tests
                 {
                   user(id: 2) {
                     id
-                    firstName
-                    lastName
-                    userName
+                    nickname
+                    email
                     profilePicUrl
                     modules(pagination: {pageSize: 1, pageNumber: 1, includeCount: false}) {
                       result { id }
@@ -67,12 +65,11 @@ namespace Dessert.Tests.Tests
 
             var account = response.GetDataFieldAs<ApplicationUser>("user");
 
-            Assertions.Equal(2, account.Id);
-            Assertions.Equal("Eleanor", account.UserName);
-            // Assertions.Equal("Eleanor", account.FirstName);
-            // Assertions.Equal("Shellstrop", account.LastName);
-            Assertions.IsType<JArray>(response.Data);//["user"]["modules"]["result"]);
-            Assertions.Empty(response.Data);//["user"]["tokens"]);
+            Assert.Equal(2, account.Id);
+            Assert.Equal("Eleanor", account.Nickname);
+            Assert.Equal("eleanor.s@gmail.co", account.Email);
+            Assert.IsType<JArray>(response.Data["user"]["modules"]["result"]);
+            Assert.Empty(response.Data["user"]["tokens"]);
         }
 
         [Fact]
@@ -91,9 +88,7 @@ namespace Dessert.Tests.Tests
                     publishedDateTime
                     author {
                       id
-                      firstName
-                      lastName
-                      userName
+                      nickname
                     }
                     isCore
                     tags {
@@ -112,13 +107,11 @@ namespace Dessert.Tests.Tests
 
             var module = response.GetDataFieldAs<Module>("module");
 
-            Assertions.Equal(1, module.Id);
-            Assertions.Equal("dessert-yaml-js", module.Name);
-            Assertions.Equal("WASM connector corresponding to the yaml-js library", module.Description);
-            Assertions.Equal(new ApplicationUser(), module.Author);
-            Assertions.Equal(new ApplicationUser(), module.Author);
-            // Assertions.Equal("Tahani", module.Author.FirstName);
-            // Assertions.Equal("Al-Jamil", module.Author.LastName);
+            Assert.Equal(1, module.Id);
+            Assert.Equal("dessert-yaml-js", module.Name);
+            Assert.Equal("WASM connector corresponding to the yaml-js library", module.Description);
+            Assert.Equal(1, module.Author.Id);
+            Assert.Equal("Tahani", module.Author.Nickname);
         }
 
         [Fact]
@@ -147,8 +140,34 @@ namespace Dessert.Tests.Tests
                 }
             });
 
+            Assert.Null(response.Errors);
             var result = response.GetDataFieldAs<PaginatedResult<Module>>("search");
-            Assertions.NotNull(result.Result);
+            Assert.NotNull(result.Result);
+        }
+        
+        [Fact]
+        public async Task TestRecommended()
+        {
+            var client = _factory.CreateGraphQlHttpClient();
+            var response = await client.SendQueryAsync(new GraphQLRequest
+            {
+                Query = @"
+                    query($name: String!){
+                          recommend(dependencies:[{name:$name}]){
+                          id
+                          name
+                        }
+                    }
+                ",
+                Variables = new
+                {
+                    name = "yaml-js",
+                }
+            });
+
+            Assert.Null(response.Errors);
+            var result = response.GetDataFieldAs<List<Module>>("recommend");
+            Assert.NotEmpty(result);
         }
 
         [Fact]
@@ -161,13 +180,13 @@ namespace Dessert.Tests.Tests
                 {
                   me {
                     id
-                    userName
+                    nickname
                   }
                 }
                 "
             });
 
-            Assertions.NotEmpty(response.Errors);
+            Assert.NotEmpty(response.Errors);
         }
     }
 }

@@ -41,7 +41,6 @@ namespace Dessert
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplication();
-            services.AddInfrastructure(_configuration);
             
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             
@@ -49,6 +48,7 @@ namespace Dessert
             {
                 options.AddPolicy(PolicyConstants.RequireAdministrator, Policies.RequireAdministrator);
             });
+            
 
             services.AddHttpContextAccessor();
 
@@ -77,7 +77,7 @@ namespace Dessert
                         options.SlidingExpiration = true;
                         options.Cookie.HttpOnly = true;
                         options.Cookie.SameSite = SameSiteMode.None;
-                        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                        options.Cookie.SecurePolicy = _environment.IsDevelopment() ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
                         options.Events = new CookieAuthenticationEvents
                         {
                             OnRedirectToLogin = redirectContext =>

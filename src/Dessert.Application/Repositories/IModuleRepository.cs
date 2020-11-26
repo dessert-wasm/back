@@ -22,7 +22,6 @@ namespace Dessert.Application.Repositories
             bool isCore);
 
         Task DeleteModule(string token, long moduleId);
-        Task<IReadOnlyDictionary<long, Module>> GetModuleBatch(IReadOnlyList<long> keys, CancellationToken cancellationToken);
         Task<ILookup<long, ModuleReplacement>> GetReplacementsBatch(IReadOnlyList<long> keys, CancellationToken cancellationToken);
         Task<PaginatedResult<Module>> GetModulesByAuthorId(long accountId, PaginationQuery paginationQuery);
     }

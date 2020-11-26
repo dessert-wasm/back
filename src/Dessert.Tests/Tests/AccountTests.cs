@@ -23,51 +23,49 @@ namespace Dessert.Tests.Tests
             {
                 Query = @"
                 mutation($username: String!, $password: String!) {
-                  login(username: $username, password: $password, remember: true) {
-                    firstName
-                    lastName
+                  login(email: $username, password: $password, remember: true) {
+                    nickname
                   }
                 }
                 ",
                 Variables = new
                 {
-                    username = "Eleanor",
+                    username = "eleanor.s@gmail.co",
                     password = "pass"
                 }
             });
             
 
             var account = login_response.GetDataFieldAs<ApplicationUser>("login");
-           //  Assertions.Equal("Eleanor", account.FirstName);
-           //  Assertions.Equal("Shellstrop", account.LastName);
+            Assert.Equal("Eleanor", account.Nickname);
             
             var response = await client.SendQueryAsync(new GraphQLRequest
             {
                 Query = @"
                 mutation($account: AccountInput!) {
                   updateUser(account: $account) {
-                      id
-                      firstName
-                      lastName
+                    id
+                    nickname
+                    profilePicUrl
                   }
                 }
                 ",
                 Variables = new
                 {
                     account = new {
-                        firstName = "Eleaanor",
-                        lastName = "Oui"
+                        nickname = "Oui",
+                        profilePicUrl = "mok"
                     }
                 }
             });
 
-            Assertions.Null(response.Errors);
-            Assertions.NotNull(response.Data);
+            Assert.Null(response.Errors);
+            Assert.NotNull(response.Data);
             
             var updatedAccount = response.GetDataFieldAs<ApplicationUser>("updateUser");
             
-            Assertions.Equal("Eleaanor", updatedAccount.Nickname);
-             Assertions.Equal("Oui", updatedAccount.Email);
+            Assert.Equal("Oui", updatedAccount.Nickname);
+            Assert.Equal("mok", updatedAccount.ProfilePicUrl);
             
             var me_response = await client.SendQueryAsync(new GraphQLRequest
             {
@@ -75,18 +73,18 @@ namespace Dessert.Tests.Tests
                 {
                     me {
                         id
-                        firstName
-                        lastName
+                    nickname
+                    profilePicUrl
                     }
                 }
                 "
             });
             var me = me_response.GetDataFieldAs<ApplicationUser>("me");
             
-            Assertions.Null(me_response.Errors);
-            Assertions.NotNull(me_response.Data);
-            Assertions.Equal("Eleaanor", me.Nickname);
-            Assertions.Equal("Oui", me.Email);
+            Assert.Null(me_response.Errors);
+            Assert.NotNull(me_response.Data);
+            Assert.Equal("Oui", me.Nickname);
+            Assert.Equal("mok", me.ProfilePicUrl);
         }
     }
 }

@@ -1,7 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Dessert.Domain.Entities;
+using Dessert.Infrastructure;
+using Dessert.Infrastructure.Persistence;
+using Dessert.Persistence;
+using Dessert.Utilities.Configuration;
 using GraphQL.Client.Http;
 using GraphQL.Common.Request;
 using GraphQL.Common.Response;
@@ -9,71 +15,31 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Xunit;
 
 namespace Dessert.Tests
 {
-    public static class Assertions
-    {
-        public static void Null(object responseErrors)
-        {
-            Assert.Equal(1, 1);
-        }
-
-        public static void NotNull(object responseData)
-        {
-            Assert.Equal(1, 1);
-        }
-
-        public static void Equal<T>(T oui, T lastName)
-        {
-            Assert.Equal(1, 1);
-        }
-
-        public static void IsType<T>(object responseData)
-        {
-            Assert.Equal(1, 1);
-        }
-
-        public static void Empty(object responseData)
-        {
-            Assert.Equal(1, 1);
-        }
-
-        public static void NotEmpty(object macouille)
-        {
-            Assert.Equal(1, 1);
-        }
-
-        public static void Contains<T>(IEnumerable<T> modulesToCheck, Func<T, bool> func)
-        {
-            Assert.Equal(1, 1);
-        }
-
-        public static void True(in bool success)
-        {
-            Assert.Equal(1, 1);
-        }
-
-        public static void StartsWith(string token, string s)
-        {
-            Assert.Equal(1, 1);
-        }
-    }
-    
     public class DessertWebApplicationFactory
         : WebApplicationFactory<Startup>
     {
+        protected override IWebHostBuilder CreateWebHostBuilder()
+        {
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
+            
+            return new WebHostBuilder()
+                .UseStartup<Startup>();
+        }
+
         protected override TestServer CreateServer(IWebHostBuilder builder)
         {
             var server = base.CreateServer(builder);
             try
             {
-                throw new Exception("bitch");
-                /*
                 using (var serviceScope = server.Host.Services.CreateScope())
                 {
                     var rng = new Random();
@@ -86,11 +52,11 @@ namespace Dessert.Tests
                                 ModuleCount = () => 30,
                                 ReplacementPerModule = () => rng.Next(0, 2),
                                 TagPerModule = () => rng.Next(1, 2),
+                                ReplacementsCount = () => rng.Next(2, 3),
                             },
                         });
                     seeder.Seed().Wait();
                 }
-                */
             }
             catch (Exception ex)
             {
@@ -101,60 +67,43 @@ namespace Dessert.Tests
             return server;
         }
         
-        public class GraphQLResponseE
+        public GraphQLHttpClient CreateGraphQlHttpClient()
         {
-            public object[] Errors => new Object[0];
-            public object Data => "ok";
-
-            public T GetDataFieldAs<T>(string updateuser)
+            var httpClient = CreateClient();
+            return httpClient.AsGraphQLClient(new GraphQLHttpClientOptions()
             {
-                return Activator.CreateInstance<T>();
-            }
-        }
-
-        public class GraphQLHttpClientt
-        {
-            public Task<GraphQLResponseE> SendQueryAsync(GraphQLRequest request)
-            {
-                return Task.FromResult(new GraphQLResponseE());
-            }
-            
-            public Task<GraphQLResponseE> SendMutationAsync(GraphQLRequest request)
-            {
-                return Task.FromResult(new GraphQLResponseE());
-            }
-        }
-
-        public GraphQLHttpClientt CreateGraphQlHttpClient()
-        {
-            return new GraphQLHttpClientt();
-            // var httpClient = CreateClient();
-            // return httpClient.AsGraphQLClient(new GraphQLHttpClientOptions()
-            // {
-            //     EndPoint = Server.BaseAddress,
-            //     JsonSerializerSettings = new JsonSerializerSettings
-            //     {
-            //         ContractResolver = new CamelCasePropertyNamesContractResolver() 
-            //     },
-            // });
+                EndPoint = Server.BaseAddress,
+                JsonSerializerSettings = new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver() 
+                },
+            });
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            // builder.ConfigureServices(services =>
-            // {
-            //     // Create a new service provider.
-            //     var serviceProvider = new ServiceCollection()
-            //         .AddEntityFrameworkInMemoryDatabase()
-            //         .BuildServiceProvider();
+            builder.ConfigureServices(services =>
+                {
+                    // Create a new service provider.
+                    var serviceProvider = new ServiceCollection()
+                        .AddEntityFrameworkInMemoryDatabase()
+                        .BuildServiceProvider();
 
-            //     // in memory database for testing.
-            //     services.AddDbContext<ApplicationDbContext>(options =>
-            //     {
-            //         options.UseInMemoryDatabase("InMemoryDbForTesting");
-            //         options.UseInternalServiceProvider(serviceProvider);
-            //     });
-            // });
+                    // in memory database for testing.
+                    services.AddDbContext<ApplicationDbContext>(options =>
+                        {
+                            options.UseInMemoryDatabase("InMemoryDbForTesting");
+                            options.UseInternalServiceProvider(serviceProvider);
+                        },
+                        ServiceLifetime.Transient);
+                })
+                .ConfigureServices(services =>
+                {
+                    services.AddInfrastructure();
+                })
+                .UseSetting("AllowedOrigins:0", "http://localhost")
+                .UseSetting("GitHub:ClientId", "123")
+                .UseSetting("GitHub:ClientSecret", "321");
         }
     }
 }

@@ -139,15 +139,6 @@ namespace Dessert.Infrastructure.Repositories
             return authToken.Account;
         }
 
-        public async Task<IReadOnlyDictionary<long, Module>> GetModuleBatch(IReadOnlyList<long> keys,
-            CancellationToken cancellationToken)
-        {
-            return await _applicationDbContext.Modules
-                .AsNoTracking()
-                .Where(x => keys.Contains(x.Id))
-                .ToDictionaryAsync(x => x.Id, cancellationToken);
-        }
-
         public async Task<ILookup<long, ModuleReplacement>> GetReplacementsBatch(IReadOnlyList<long> keys,
             CancellationToken cancellationToken)
         {

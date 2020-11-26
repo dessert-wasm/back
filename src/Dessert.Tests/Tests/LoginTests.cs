@@ -24,23 +24,23 @@ namespace Dessert.Tests.Tests
             {
                 Query = @"
                 mutation($username: String!, $password: String!) {
-                  login(username: $username, password: $password, remember: true) {
+                  login(email: $username, password: $password, remember: true) {
                     id
-                    userName
+                    nickname
                   }
                 }
                 ",
                 Variables = new
                 {
-                    username = "Eleanor",
+                    username = "eleanor.s@gmail.co",
                     password = "pass"
                 }
             });
 
             var account = response.GetDataFieldAs<ApplicationUser>("login");
 
-            Assertions.Equal(2, account.Id);
-            Assertions.Equal("Eleanor", account.UserName);
+            Assert.Equal(2, account.Id);
+            Assert.Equal("Eleanor", account.Nickname);
 
             response = await client.SendQueryAsync(new GraphQLRequest
             {
@@ -48,9 +48,7 @@ namespace Dessert.Tests.Tests
                 {
                   me {
                     id
-                    userName
-                    firstName
-                    lastName
+                    nickname
                   }
                 }
                 "
@@ -58,10 +56,8 @@ namespace Dessert.Tests.Tests
 
             account = response.GetDataFieldAs<ApplicationUser>("me");
 
-            Assertions.Equal(2, account.Id);
-            Assertions.Equal("Eleanor", account.UserName);
-            // Assertions.Equal("Eleanor", account.FirstName);
-            // Assertions.Equal("Shellstrop", account.LastName);
+            Assert.Equal(2, account.Id);
+            Assert.Equal("Eleanor", account.Nickname);
 
             response = await client.SendMutationAsync(new GraphQLRequest
             {
@@ -73,7 +69,7 @@ namespace Dessert.Tests.Tests
             });
 
             var isLogoutSuccess = response.GetDataFieldAs<bool>("logout");
-            Assertions.True(isLogoutSuccess);
+            Assert.True(isLogoutSuccess);
             
             response = await client.SendQueryAsync(new GraphQLRequest
             {
@@ -81,14 +77,12 @@ namespace Dessert.Tests.Tests
                 {
                   me {
                     id
-                    userName
-                    firstName
-                    lastName
+                    nickname
                   }
                 }
                 "
             });
-            Assertions.NotEmpty(response.Errors);
+            Assert.NotEmpty(response.Errors);
         }
         
         [Fact]
@@ -96,16 +90,18 @@ namespace Dessert.Tests.Tests
         {
             var client = _factory.CreateGraphQlHttpClient();
             var faker = new Faker();
-            var username = faker.Internet.UserName();
+            var username = faker.Internet.Email();
             var password = faker.Internet.Password();
+            var nickname = faker.Internet.UserName();
             
             var response = await client.SendMutationAsync(new GraphQLRequest
             {
                 Query = @"
-                mutation($username: String!, $password: String!) {
-                  register(username: $username, password: $password) {
+                mutation($username: String!, $password: String!, $nickname: String!) {
+                  register(email: $username, password: $password, nickname: $nickname) {
                     id
-                    userName
+                    nickname
+                    email
                   }
                 }
                 ",
@@ -113,12 +109,14 @@ namespace Dessert.Tests.Tests
                 {
                     username = username,
                     password = password, 
+                    nickname = nickname,
                 }
             });
             
             var account = response.GetDataFieldAs<ApplicationUser>("register");
 
-            Assertions.Equal(username, account.UserName);
+            Assert.Equal(username, account.Email);
+            Assert.Equal(nickname, account.Nickname);
             
             response = await client.SendQueryAsync(new GraphQLRequest
             {
@@ -126,20 +124,19 @@ namespace Dessert.Tests.Tests
                 {
                   me {
                     id
-                    userName
                   }
                 }
                 "
             });
-            Assertions.NotEmpty(response.Errors);
+            Assert.NotEmpty(response.Errors);
 
             response = await client.SendMutationAsync(new GraphQLRequest
             {
                 Query = @"
                 mutation($username: String!, $password: String!) {
-                  login(username: $username, password: $password, remember: true) {
+                  login(email: $username, password: $password, remember: true) {
                     id
-                    userName
+                    email
                   }
                 }
                 ",
@@ -152,7 +149,7 @@ namespace Dessert.Tests.Tests
 
             account = response.GetDataFieldAs<ApplicationUser>("login");
 
-            Assertions.Equal(username, account.UserName);
+            Assert.Equal(username, account.Email);
 
             response = await client.SendQueryAsync(new GraphQLRequest
             {
@@ -160,7 +157,7 @@ namespace Dessert.Tests.Tests
                 {
                   me {
                     id
-                    userName
+                    email
                   }
                 }
                 "
@@ -168,7 +165,7 @@ namespace Dessert.Tests.Tests
 
             account = response.GetDataFieldAs<ApplicationUser>("me");
 
-            Assertions.Equal(username, account.UserName);
+            Assert.Equal(username, account.Email);
 
             response = await client.SendMutationAsync(new GraphQLRequest
             {
@@ -180,7 +177,7 @@ namespace Dessert.Tests.Tests
             });
 
             var isLogoutSuccess = response.GetDataFieldAs<bool>("logout");
-            Assertions.True(isLogoutSuccess);
+            Assert.True(isLogoutSuccess);
             
             response = await client.SendQueryAsync(new GraphQLRequest
             {
@@ -188,12 +185,11 @@ namespace Dessert.Tests.Tests
                 {
                   me {
                     id
-                    userName
                   }
                 }
                 "
             });
-            Assertions.NotEmpty(response.Errors);
+            Assert.NotEmpty(response.Errors);
         }
     }
 }

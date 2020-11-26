@@ -17,6 +17,8 @@ namespace Dessert.Types
         {
             descriptor.BindFieldsExplicitly();
 
+            descriptor.Name("Account");
+
             descriptor.Field(f => f.Id)
                 .Type<NonNullType<IntType>>();
 

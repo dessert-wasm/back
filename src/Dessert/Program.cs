@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Dessert.Infrastructure;
 using Dessert.Utilities.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.CommandLineUtils;
@@ -50,6 +51,10 @@ namespace Dessert
                 .UseKestrel((builderContext, options) =>
                 {
                     options.Configure(builderContext.Configuration.GetSection("Kestrel"));
+                })
+                .ConfigureServices((context, collection) =>
+                {
+                    collection.AddInfrastructureDb(context.Configuration).AddInfrastructure();
                 })
                 .Build();
 
